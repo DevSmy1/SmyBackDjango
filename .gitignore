@@ -1,0 +1,9 @@
+.vscode
+Bkp
+.venv
+*.xlsx
+*.pem
+
+__pycache__/
+logs
+*.jpg
