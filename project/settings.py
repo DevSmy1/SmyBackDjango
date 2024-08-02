@@ -10,8 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
-from decouple import config
+import warnings
+from decouple import config, Csv
+import oracledb
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,10 +26,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = ["*"]
+AMBIENTE = config("AMBIENTE", default="DEV", cast=str)
+DEBUG = AMBIENTE != "PROD"
+
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="*", cast=Csv())
 
 
 # Application definition
@@ -42,6 +46,10 @@ INSTALLED_APPS = [
     "project.controleUni",
     "project.barcode",
     "project.intranet",
+    "project.c5",
+    # Others
+    "ninja",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -52,6 +60,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Others middlewares
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "project.urls"
@@ -76,14 +86,26 @@ WSGI_APPLICATION = "project.wsgi.application"
 
 
 # Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if AMBIENTE == "DEV":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
+if AMBIENTE == "HOMOLOG":
+    oracledb.init_oracle_client()
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.oracle",
+            "USER": config("USER_DB"),
+            "PASSWORD": config("PASSWORD_DB"),
+            "HOST": config("HOST_DB"),
+            "PORT": config("PORT_DB"),
+            "NAME": config("NAME_DB"),
+        }
+    }
 
 
 # Password validation
@@ -126,3 +148,61 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Cors settings
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "credentials",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    ".AuthCookie",  # Add this line to allow the authcookie header
+]
+
+CORS_ALLOW_METHODS = (
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+)
+
+warnings.filterwarnings("ignore", message="Signature .* does not match any known type")
+
+
+# Logging
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "loggers": {
+        "cargo": {
+            "handlers": [
+                "cargoLog",
+            ],
+            "level": "WARNING",
+        },
+    },
+    "handlers": {
+        "cargoLog": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/cargo.log"),
+            "formatter": "simpleRe",
+        },
+    },
+    "formatters": {
+        "simpleRe": {
+            "format": "{levelname} {asctime} {module} {funcName} {lineno} {message}",
+            "style": "{",
+            "datefmt": "%d/%m/%Y %H:%M:%S",
+        }
+    },
+}
