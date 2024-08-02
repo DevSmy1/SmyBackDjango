@@ -3,6 +3,7 @@ Bkp
 .venv
 *.xlsx
 *.pem
+.env
 
 __pycache__/
 logs

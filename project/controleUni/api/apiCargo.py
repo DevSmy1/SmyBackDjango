@@ -21,7 +21,7 @@ CAMINHO_ARQUIVO = "cargos.pdf"
     response={200: List[SchemaCargo], 404: SchemaBase.Erro, 500: SchemaBase.Erro},
     summary="Retorna todos os cargos",
 )
-def get_cargos(request):
+def buscar_cargos(request):
     try:
         return TsmyEuCargos.objects.all().values("cod_funcao", "funcao")
     except Exception as e:
@@ -34,7 +34,7 @@ def get_cargos(request):
     response={200: SchemaCargo, 404: SchemaBase.RespostaErro},
     summary="Retorna um cargo específico",
 )
-def get_cargo(request, cod_funcao: int):
+def buscar_cargo(request, cod_funcao: int):
     try:
         return TsmyEuCargos.objects.get(cod_funcao=cod_funcao)
     except TsmyEuCargos.DoesNotExist as e:
@@ -91,9 +91,11 @@ def criar_cargo(request, data: SchemaCargo):
 )
 def atualizar_cargo(request, data: SchemaCargo):
     try:
-        TsmyEuCargos.objects.filter(cod_funcao=data.cod_funcao).update(
-            **data.dict(), usuarioalt=request.auth
-        )
+        cargo = TsmyEuCargos.objects.get(cod_funcao=data.cod_funcao)
+        for key, value in data.dict(exclude_unset=True).items():
+            setattr(cargo, key, value)
+        cargo.full_clean()
+        cargo.save()
         return {"descricao": "Cargo atualizado com sucesso"}
     except TsmyEuCargos.DoesNotExist as e:
         logger.error(f"Erro ao atualizar cargo {data.cod_funcao}: {e}")

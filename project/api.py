@@ -2,11 +2,19 @@ from ninja import NinjaAPI
 from ninja.security import APIKeyHeader
 
 from project.barcode.api import router as barcodeRouter
-from project.intranet.models import TsmyIntranetusuario
 from project.controleUni.api.apiCargo import (
-    router as cargoRouter,
     CAMINHO_BASE as CAMINHO_BASE_CARGO,
 )
+from project.controleUni.api.apiCargo import (
+    router as cargoRouter,
+)
+from project.controleUni.api.apiColab import (
+    CAMINHO_BASE as CAMINHO_BASE_COLAB,
+)
+from project.controleUni.api.apiColab import (
+    router as colabRouter,
+)
+from project.intranet.models import TsmyIntranetusuario
 
 
 class Unauthorized(Exception):
@@ -26,6 +34,7 @@ class GlobalAuth(APIKeyHeader):
 
 api = NinjaAPI(auth=GlobalAuth())
 api.add_router(CAMINHO_BASE_CARGO, cargoRouter, tags=["Cargo"])
+api.add_router(CAMINHO_BASE_COLAB, colabRouter, tags=["Colaborador"])
 
 
 @api.exception_handler(Unauthorized)

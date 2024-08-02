@@ -189,12 +189,24 @@ LOGGING = {
             ],
             "level": "WARNING",
         },
+        "colab": {
+            "handlers": [
+                "colabLog",
+            ],
+            "level": "WARNING",
+        },
     },
     "handlers": {
         "cargoLog": {
             "level": "INFO",
             "class": "logging.FileHandler",
             "filename": os.path.join(BASE_DIR, "logs/cargo.log"),
+            "formatter": "simpleRe",
+        },
+        "colabLog": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/colab.log"),
             "formatter": "simpleRe",
         },
     },
