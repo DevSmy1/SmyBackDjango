@@ -15,6 +15,7 @@ from pathlib import Path
 import warnings
 from decouple import config, Csv
 import oracledb
+from .logging import LOGGING as LOG_CONFIG
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -177,61 +178,10 @@ CORS_ALLOW_METHODS = (
     "PUT",
 )
 
+# Logging
 warnings.filterwarnings("ignore", message="Signature .* does not match any known type")
 
-
-# Logging
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "loggers": {
-        "cargo": {
-            "handlers": [
-                "cargoLog",
-            ],
-            "level": "WARNING",
-        },
-        "colab": {
-            "handlers": [
-                "colabLog",
-            ],
-            "level": "WARNING",
-        },
-        "agrupador": {
-            "handlers": [
-                "agrupadorLog",
-            ],
-            "level": "WARNING",
-        },
-    },
-    "handlers": {
-        "cargoLog": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "logs/cargo.log"),
-            "formatter": "simpleRe",
-        },
-        "colabLog": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "logs/colab.log"),
-            "formatter": "simpleRe",
-        },
-        "agrupadorLog": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "logs/colab.log"),
-            "formatter": "simpleRe",
-        },
-    },
-    "formatters": {
-        "simpleRe": {
-            "format": "{levelname} {asctime} {module} {funcName} {lineno} {message}",
-            "style": "{",
-            "datefmt": "%d/%m/%Y %H:%M:%S",
-        }
-    },
-}
+LOGGING = LOG_CONFIG
 
 # API
 NINJA_PAGINATION_PER_PAGE = 15
