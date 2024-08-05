@@ -1,12 +1,14 @@
-from ninja import Schema
+from ninja import Field, Schema
 from datetime import date, datetime
 
 
+# Cargo
 class SchemaCargo(Schema):
     cod_funcao: int
     funcao: str
 
 
+# Colab
 class SchemaColabOut(Schema):
     id_colab: int
     nroempresa: int
@@ -32,3 +34,21 @@ class SchemaColabIn(Schema):
     cod_funcao_id: int
     cod_funcao_nova_id: int | None = None
     cod_funcao_ant_id: int | None = None
+
+
+# Agrupador
+class SchemaAgrupador(Schema):
+    codigo: int
+    descricao: str
+
+
+# Rel Agrupador x Cargo
+class SchemaRelAgrupadorCargoOut(Schema):
+    cod_funcao: int = Field(alias="cod_funcao_id")
+    valor: int | None = Field(None, alias="valor_id")
+    quantidade: int
+
+
+class SchemaRelAgrupadorCargoin(Schema):
+    valor: int
+    quantidade: int

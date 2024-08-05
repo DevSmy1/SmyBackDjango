@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     "ninja",
     "corsheaders",
 ]
+if AMBIENTE != "PROD":
+    INSTALLED_APPS.append("django_extensions")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -195,6 +197,12 @@ LOGGING = {
             ],
             "level": "WARNING",
         },
+        "agrupador": {
+            "handlers": [
+                "agrupadorLog",
+            ],
+            "level": "WARNING",
+        },
     },
     "handlers": {
         "cargoLog": {
@@ -209,6 +217,12 @@ LOGGING = {
             "filename": os.path.join(BASE_DIR, "logs/colab.log"),
             "formatter": "simpleRe",
         },
+        "agrupadorLog": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/colab.log"),
+            "formatter": "simpleRe",
+        },
     },
     "formatters": {
         "simpleRe": {
@@ -218,3 +232,6 @@ LOGGING = {
         }
     },
 }
+
+# API
+NINJA_PAGINATION_PER_PAGE = 15

@@ -11,9 +11,14 @@ from project.controleUni.api.apiCargo import (
 from project.controleUni.api.apiColab import (
     CAMINHO_BASE as CAMINHO_BASE_COLAB,
 )
+from project.controleUni.api.apiAgrupador import (
+    CAMINHO_BASE as CAMINHO_BASE_AGRUPADOR,
+)
 from project.controleUni.api.apiColab import (
     router as colabRouter,
 )
+from project.controleUni.api.apiAgrupador import router as agrupadorRouter
+
 from project.intranet.models import TsmyIntranetusuario
 
 
@@ -35,6 +40,7 @@ class GlobalAuth(APIKeyHeader):
 api = NinjaAPI(auth=GlobalAuth())
 api.add_router(CAMINHO_BASE_CARGO, cargoRouter, tags=["Cargo"])
 api.add_router(CAMINHO_BASE_COLAB, colabRouter, tags=["Colaborador"])
+api.add_router(CAMINHO_BASE_AGRUPADOR, agrupadorRouter, tags=["Agrupador"])
 
 
 @api.exception_handler(Unauthorized)

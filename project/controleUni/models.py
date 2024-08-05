@@ -118,6 +118,8 @@ class TsmyEuCargos(models.Model):
 
 
 class TsmyEuCargoAgrup(models.Model):
+    """O model de Agrupador é uma tabela que usamos para criar um valor de agrupador que será igual ao da consinco para assim ser facil o acesso as familias."""
+
     codigo = models.SmallAutoField(primary_key=True, db_column="valor")
     descricao = models.CharField(max_length=50)
     dt_inclusao = models.DateTimeField(blank=True, null=True)
@@ -145,7 +147,7 @@ class TsmyEuCargoAgrup(models.Model):
 
 
 class TsmyEuCargoEpiUnif(models.Model):
-    seqfamilia = models.IntegerField(blank=True, null=True)
+    # seqfamilia = models.IntegerField(blank=True, null=True)
     cod_funcao = models.ForeignKey(
         TsmyEuCargos,
         models.CASCADE,
@@ -154,6 +156,15 @@ class TsmyEuCargoEpiUnif(models.Model):
         blank=True,
         null=True,
     )
+    valor = models.ForeignKey(
+        "TsmyEuCargoAgrup",
+        models.CASCADE,
+        db_column="id_valor",
+        related_name="fk_codigo_epi_unif",
+        blank=True,
+        null=True,
+    )
+    quantidade = models.IntegerField(blank=True, null=True)
     usuarioincl = models.ForeignKey(
         TsmyIntranetusuario,
         models.CASCADE,
@@ -170,15 +181,6 @@ class TsmyEuCargoEpiUnif(models.Model):
         blank=True,
         null=True,
     )
-    valor = models.ForeignKey(
-        "TsmyEuCargoAgrup",
-        models.CASCADE,
-        db_column="id_valor",
-        related_name="fk_codigo_epi_unif",
-        blank=True,
-        null=True,
-    )
-    quantidade = models.IntegerField(blank=True, null=True)
     dt_inclusao = models.DateTimeField(blank=True, null=True)
     dt_alteracao = models.DateTimeField(blank=True, null=True)
 

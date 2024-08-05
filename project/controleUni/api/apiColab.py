@@ -3,6 +3,7 @@ import os
 from typing import List
 
 from ninja import File, Router, Schema, UploadedFile
+from ninja.pagination import paginate
 
 from project.controleUni.core.colab import carregarArquivoColab
 from project.controleUni.schemas import SchemaCargo, SchemaColabIn, SchemaColabOut
@@ -21,6 +22,7 @@ CAMINHO_ARQUIVO = "colab.xls"
     response={200: List[SchemaColabOut], 500: SchemaBase.Erro},
     summary="Retorna todos os colaboradores",
 )
+@paginate()
 def buscar_colabs(request):
     try:
         return TsmyEuColaboradores.objects.exclude(matricula=None)
@@ -88,6 +90,7 @@ def atualizar_colab(request, id_colab: int, data: SchemaColabIn):
         colab = TsmyEuColaboradores.objects.get(id_colab=id_colab)
         for key, value in data.dict(exclude_unset=True).items():
             setattr(colab, key, value)
+        colab.usuarioalt = request.auth
         colab.full_clean()
         colab.save()
         return {"descricao": "Colaborador atualizado com sucesso"}

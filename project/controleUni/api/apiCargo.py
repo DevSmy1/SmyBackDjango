@@ -8,6 +8,7 @@ from project.controleUni.core.cargo import carregarArquivoCargo
 from project.controleUni.schemas import SchemaCargo
 import project.schemas as SchemaBase
 from project.controleUni.models import TsmyEuCargos
+from ninja.pagination import paginate
 
 logger = logging.getLogger("cargo")
 
@@ -21,6 +22,7 @@ CAMINHO_ARQUIVO = "cargos.pdf"
     response={200: List[SchemaCargo], 404: SchemaBase.Erro, 500: SchemaBase.Erro},
     summary="Retorna todos os cargos",
 )
+@paginate()
 def buscar_cargos(request):
     try:
         return TsmyEuCargos.objects.all().values("cod_funcao", "funcao")
@@ -94,6 +96,7 @@ def atualizar_cargo(request, data: SchemaCargo):
         cargo = TsmyEuCargos.objects.get(cod_funcao=data.cod_funcao)
         for key, value in data.dict(exclude_unset=True).items():
             setattr(cargo, key, value)
+        cargo.usuarioalt = request.auth
         cargo.full_clean()
         cargo.save()
         return {"descricao": "Cargo atualizado com sucesso"}
