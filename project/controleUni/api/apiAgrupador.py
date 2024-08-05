@@ -69,7 +69,7 @@ def buscar_agrupador(request, codigo: int):
 
 @router.post(
     "/",
-    response={200: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
+    response={201: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
     summary="Cria um novo agrupador",
 )
 def criar_agrupador(request, data: SchemaAgrupador):
@@ -153,7 +153,7 @@ def buscar_agrupadores_cargo(request, cargo: int):
 @router.post(
     "relacionamento/{cargo}",
     response={
-        200: SchemaBase.Sucesso,
+        201: SchemaBase.Sucesso,
         404: SchemaBase.RespostaErro,
         500: SchemaBase.RespostaErro,
     },

@@ -68,7 +68,7 @@ def carrega_arq_cargos(request, arquivoCargo: UploadedFile = File(...)):  # type
 
 @router.post(
     "/",
-    response={200: SchemaBase.Sucesso, 404: SchemaBase.RespostaErro},
+    response={201: SchemaBase.Sucesso, 404: SchemaBase.RespostaErro},
     summary="Cria um novo cargo",
 )
 def criar_cargo(request, data: SchemaCargo):

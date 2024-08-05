@@ -52,3 +52,12 @@ class SchemaRelAgrupadorCargoOut(Schema):
 class SchemaRelAgrupadorCargoin(Schema):
     valor: int
     quantidade: int
+
+
+# Observação
+class SchemaObservaçãoOut(Schema):
+    idObservacao: int
+    observacao: str
+
+class SchemaObservaçãoIn(Schema):
+    observacao: str

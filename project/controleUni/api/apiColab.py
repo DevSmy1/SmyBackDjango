@@ -68,7 +68,7 @@ def carregar_arquivo_colab(request, arquivoColab: UploadedFile = File(...)):  # 
 
 @router.post(
     "/",
-    response={200: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
+    response={201: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
     summary="Cria um novo colaborador",
 )
 def criar_colab(request, colab: SchemaColabIn):
