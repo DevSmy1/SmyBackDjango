@@ -89,6 +89,9 @@ class TsmyEuColaboradores(models.Model):
         # # managed = False
         db_table = "tsmy_eu_colaboradores"
 
+    def __str__(self):
+        return self.nome
+
 
 class TsmyEuCargos(models.Model):
     cod_funcao = models.SmallAutoField(primary_key=True)

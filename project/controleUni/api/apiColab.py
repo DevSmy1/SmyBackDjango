@@ -6,7 +6,12 @@ from ninja import File, Router, Schema, UploadedFile
 from ninja.pagination import paginate
 
 from project.controleUni.core.colab import carregarArquivoColab
-from project.controleUni.schemas import SchemaCargo, SchemaColabIn, SchemaColabOut
+from project.controleUni.schemas import (
+    SchemaCargo,
+    SchemaColabIn,
+    SchemaColabOut,
+    SchemaColabOutMin,
+)
 import project.schemas as SchemaBase
 from project.controleUni.models import TsmyEuColaboradores
 
@@ -26,6 +31,24 @@ CAMINHO_ARQUIVO = "colab.xls"
 def buscar_colabs(request):
     try:
         return TsmyEuColaboradores.objects.exclude(matricula=None)
+    except Exception as e:
+        logger.error(f"Erro ao buscar colaboradores: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
+
+
+@router.get(
+    "/min/",
+    response={200: List[SchemaColabOutMin], 500: SchemaBase.Erro},
+    summary="Retorna todos os colaboradores",
+)
+def buscar_colabs_min(request):
+    try:
+        return TsmyEuColaboradores.objects.exclude(matricula=None).values(
+            "id_colab",
+            "matricula",
+            "nome",
+            "nroempresa",
+        )
     except Exception as e:
         logger.error(f"Erro ao buscar colaboradores: {e}")
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}

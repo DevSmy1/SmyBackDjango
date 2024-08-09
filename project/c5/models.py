@@ -57,3 +57,14 @@ class MapProdcodigo(models.Model):
         # managed = False
         db_table = "map_prodcodigo"
         unique_together = (("codacesso"),)
+
+
+class GeEmpresa(models.Model):
+    nroempresa = models.IntegerField(primary_key=True)
+    fantasia = models.CharField(max_length=30)
+    razaosocial = models.CharField(max_length=60)
+    nomereduzido = models.CharField(unique=True, max_length=15)
+
+    class Meta:
+        managed = False
+        db_table = "ge_empresa"

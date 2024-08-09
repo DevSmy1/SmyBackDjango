@@ -9,3 +9,8 @@ class SchemaMapFamatributo(Schema):
     @staticmethod
     def resolve_seqfamilia__familia(obj):
         return obj["seqfamilia__familia"].replace("(CONS) ", "")
+
+
+class SchemaEmpresa(Schema):
+    nroempresa: int
+    nomereduzido: str

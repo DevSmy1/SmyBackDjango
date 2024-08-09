@@ -33,7 +33,6 @@ CAMINHO_BASE = "/agrupador"
     },
     summary="Retorna todos os agrupadores",
 )
-@paginate()
 def buscar_agrupadores(request):
     try:
         return (
@@ -133,7 +132,7 @@ def deletar_agrupador(request, codigo: int):
 
 # Relacionamento Agrupador x Cargo
 @router.get(
-    "relacionamento/{cargo}",
+    "relacionado/{cargo}",
     response={
         200: List[SchemaRelAgrupadorCargoOut],
         404: SchemaBase.RespostaErro,
@@ -142,9 +141,30 @@ def deletar_agrupador(request, codigo: int):
     summary="Retorna os agrupadores de um cargo",
     tags=["Relacionamento Cargo x Agrupador"],
 )
-def buscar_agrupadores_cargo(request, cargo: int):
+def buscar_agrupadores_relacionado_cargo(request, cargo: int):
     try:
         return TsmyEuCargoEpiUnif.objects.filter(cod_funcao=cargo)
+    except Exception as e:
+        logger.error(f"Erro ao buscar agrupadores de um cargo: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
+
+
+@router.get(
+    "naoRelacionado/{cargo}",
+    response={
+        200: List[SchemaAgrupador],
+        404: SchemaBase.RespostaErro,
+        500: SchemaBase.RespostaErro,
+    },
+    summary="Retorna os agrupadores de um cargo",
+    tags=["Relacionamento Cargo x Agrupador"],
+)
+def buscar_agrupadores_nao_relacionado_cargo(request, cargo: int):
+    try:
+        rel = TsmyEuCargoEpiUnif.objects.filter(cod_funcao=cargo).values_list(
+            "valor", flat=True
+        )
+        return TsmyEuCargoAgrup.objects.exclude(codigo__in=rel)
     except Exception as e:
         logger.error(f"Erro ao buscar agrupadores de um cargo: {e}")
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}

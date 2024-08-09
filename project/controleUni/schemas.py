@@ -15,12 +15,23 @@ class SchemaColabOut(Schema):
     matricula: int
     cpf: int
     nome: str
+    genero: str
     dt_adm: date | None = None
     dt_desligamento: date | None = None
     dt_experiencia: date | None = None
     cod_funcao_id: int
+    nome_funcao: str = Field(alias="cod_funcao.funcao")
     cod_funcao_nova_id: int | None = None
+    nome_funcao_nova: str | None = Field(None, alias="cod_funcao_nova.funcao")
     cod_funcao_ant_id: int | None = None
+    nome_funcao_ant: str | None = Field(None, alias="cod_funcao_ant.funcao")
+
+
+class SchemaColabOutMin(Schema):
+    id_colab: int
+    matricula: int
+    nome: str
+    nroempresa: int
 
 
 class SchemaColabIn(Schema):
@@ -46,6 +57,7 @@ class SchemaAgrupador(Schema):
 class SchemaRelAgrupadorCargoOut(Schema):
     cod_funcao: int = Field(alias="cod_funcao_id")
     valor: int | None = Field(None, alias="valor_id")
+    descricao: str | None = Field(None, alias="valor.descricao")
     quantidade: int
 
 
@@ -58,6 +70,7 @@ class SchemaRelAgrupadorCargoin(Schema):
 class SchemaObservaçãoOut(Schema):
     idObservacao: int
     observacao: str
+
 
 class SchemaObservaçãoIn(Schema):
     observacao: str

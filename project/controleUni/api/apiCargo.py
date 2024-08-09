@@ -22,7 +22,6 @@ CAMINHO_ARQUIVO = "cargos.pdf"
     response={200: List[SchemaCargo], 404: SchemaBase.Erro, 500: SchemaBase.Erro},
     summary="Retorna todos os cargos",
 )
-@paginate()
 def buscar_cargos(request):
     try:
         return TsmyEuCargos.objects.all().values("cod_funcao", "funcao")
