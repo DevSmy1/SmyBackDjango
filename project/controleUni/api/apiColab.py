@@ -104,11 +104,11 @@ def criar_colab(request, colab: SchemaColabIn):
 
 
 @router.put(
-    "atualiza/{id_colab}",
+    "alterar/{id_colab}",
     response={200: SchemaBase.Sucesso, 404: SchemaBase.RespostaErro},
-    summary="Atualiza um colaborador",
+    summary="Alterar um colaborador",
 )
-def atualizar_colab(request, id_colab: int, data: SchemaColabIn):
+def alterar_colab(request, id_colab: int, data: SchemaColabIn):
     try:
         colab = TsmyEuColaboradores.objects.get(id_colab=id_colab)
         for key, value in data.dict(exclude_unset=True).items():
@@ -118,19 +118,19 @@ def atualizar_colab(request, id_colab: int, data: SchemaColabIn):
         colab.save()
         return {"descricao": "Colaborador atualizado com sucesso"}
     except TsmyEuColaboradores.DoesNotExist as e:
-        logger.error(f"Erro ao atualizar colaborador {id_colab}: {e}")
+        logger.error(f"Erro ao alterar colaborador {id_colab}: {e}")
         return 404, {
             "erro": {"descricao": "Colaborador não encontrado", "detalhes": str(e)}
         }
     except Exception as e:
-        logger.error(f"Erro ao atualizar colaborador {id_colab}: {e}")
+        logger.error(f"Erro ao alterar colaborador {id_colab}: {e}")
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
 
 
 @router.delete(
-    "deleta/{id_colab}",
+    "deletar/{id_colab}",
     response={200: SchemaBase.Sucesso, 404: SchemaBase.RespostaErro},
-    summary="Deleta um colaborador",
+    summary="Deletar um colaborador",
 )
 def deletar_colab(request, id_colab: int):
     try:

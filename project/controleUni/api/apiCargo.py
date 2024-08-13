@@ -75,22 +75,22 @@ def criar_cargo(request, data: SchemaCargo):
         TsmyEuCargos.objects.create(
             **data.dict(), usuarioincl=request.auth, usuarioalt=request.auth
         )
-        return {"descricao": "Cargo criado com sucesso"}
+        return 201, {"descricao": "Cargo criado com sucesso"}
     except Exception as e:
         logger.error(f"Erro ao criar cargo: {e}")
         return 404, {"erro": {"descricao": "Erro ao criar cargo", "detalhes": str(e)}}
 
 
 @router.put(
-    "/atualiza/",
+    "/alterar/",
     response={
         200: SchemaBase.Sucesso,
         404: SchemaBase.RespostaErro,
         500: SchemaBase.RespostaErro,
     },
-    summary="Atualiza um cargo",
+    summary="Alterar um cargo",
 )
-def atualizar_cargo(request, data: SchemaCargo):
+def alterar_cargo(request, data: SchemaCargo):
     try:
         cargo = TsmyEuCargos.objects.get(cod_funcao=data.cod_funcao)
         for key, value in data.dict(exclude_unset=True).items():
@@ -100,17 +100,15 @@ def atualizar_cargo(request, data: SchemaCargo):
         cargo.save()
         return {"descricao": "Cargo atualizado com sucesso"}
     except TsmyEuCargos.DoesNotExist as e:
-        logger.error(f"Erro ao atualizar cargo {data.cod_funcao}: {e}")
+        logger.error(f"Erro ao alterar cargo {data.cod_funcao}: {e}")
         return 404, {"erro": {"descricao": "Cargo não encontrado", "detalhes": str(e)}}
     except Exception as e:
-        logger.error(f"Erro ao atualizar cargo: {e}")
-        return 500, {
-            "erro": {"descricao": "Erro ao atualizar cargo", "detalhes": str(e)}
-        }
+        logger.error(f"Erro ao alterar cargo: {e}")
+        return 500, {"erro": {"descricao": "Erro ao alterar cargo", "detalhes": str(e)}}
 
 
 @router.delete(
-    "/deleta/{cod_funcao}",
+    "/deletar/{cod_funcao}",
     response={
         200: SchemaBase.Sucesso,
         404: SchemaBase.RespostaErro,

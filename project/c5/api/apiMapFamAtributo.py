@@ -31,8 +31,13 @@ def buscar_familias(request, valor: str):
             .exclude(Q(valor__icontains="Peso") | Q(valor__icontains="Cont"))
             .values("seqfamilia", "seqfamilia__familia", "descatributo", "valor")
         )
-        if familias.count() == 0:
-            raise Exception("Não há atributos cadastrados")
+        # if familias.count() == 0:
+        #     return 404, {
+        #         "erro": {
+        #             "descricao": "Familias não encontradas",
+        #             "detalhes": "Nenhuma familia encontrada para o valor informado",
+        #         }
+        #     }
         return familias
     except MapFamatributo.DoesNotExist as e:
         logger.error(f"Erro ao buscar familias {valor}: {e}")

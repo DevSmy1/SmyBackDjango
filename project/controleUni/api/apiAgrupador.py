@@ -76,22 +76,22 @@ def criar_agrupador(request, data: SchemaAgrupador):
         TsmyEuCargoAgrup.objects.create(
             **data.dict(), usuarioincl=request.auth, usuarioalt=request.auth
         )
-        return {"descricao": "Agrupador criado com sucesso"}
+        return 201, {"descricao": "Agrupador criado com sucesso"}
     except Exception as e:
         logger.error(f"Erro ao criar agrupador: {e}")
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
 
 
 @router.put(
-    "atualizar/{codigo}",
+    "alterar/{codigo}",
     response={
         200: SchemaBase.Sucesso,
         404: SchemaBase.RespostaErro,
         500: SchemaBase.RespostaErro,
     },
-    summary="Atualiza um agrupador",
+    summary="alterar um agrupador",
 )
-def atualizar_agrupador(request, codigo: int, data: SchemaAgrupador):
+def alterar_agrupador(request, codigo: int, data: SchemaAgrupador):
     try:
         obj = TsmyEuCargoAgrup.objects.get(codigo=codigo)
         obj.descricao = data.descricao
@@ -103,7 +103,7 @@ def atualizar_agrupador(request, codigo: int, data: SchemaAgrupador):
             "erro": {"descricao": "Agrupador não encontrado", "detalhes": str(e)}
         }
     except Exception as e:
-        logger.error(f"Erro ao atualizar agrupador: {e}")
+        logger.error(f"Erro ao alterar agrupador: {e}")
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
 
 
@@ -195,7 +195,7 @@ def criar_relacionamento_agrupador_cargo(
             usuarioincl=request.auth,
             usuarioalt=request.auth,
         )
-        return {"descricao": "Relacionamento criado com sucesso"}
+        return 201, {"descricao": "Relacionamento criado com sucesso"}
     except TsmyEuCargos.DoesNotExist as e:
         return 404, {"erro": {"descricao": "Cargo não encontrado", "detalhes": str(e)}}
     except TsmyEuCargoAgrup.DoesNotExist as e:
@@ -208,16 +208,16 @@ def criar_relacionamento_agrupador_cargo(
 
 
 @router.put(
-    "relacionamento/atualizar/{cargo}",
+    "relacionamento/alterar/{cargo}",
     response={
         200: SchemaBase.Sucesso,
         404: SchemaBase.RespostaErro,
         500: SchemaBase.RespostaErro,
     },
-    summary="Atualiza um relacionamento entre um agrupador e um cargo",
+    summary="Alterar um relacionamento entre um agrupador e um cargo",
     tags=["Relacionamento Cargo x Agrupador"],
 )
-def atualizar_relacionamento_agrupador_cargo(
+def alterar_relacionamento_agrupador_cargo(
     request, cargo: int, data: SchemaRelAgrupadorCargoin
 ):
     try:
@@ -231,7 +231,7 @@ def atualizar_relacionamento_agrupador_cargo(
             "erro": {"descricao": "Relacionamento não encontrado", "detalhes": str(e)}
         }
     except Exception as e:
-        logger.error(f"Erro ao atualizar relacionamento cargo x agrupador: {e}")
+        logger.error(f"Erro ao alterar relacionamento cargo x agrupador: {e}")
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
 
 

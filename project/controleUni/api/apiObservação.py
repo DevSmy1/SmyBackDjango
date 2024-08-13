@@ -70,21 +70,21 @@ def buscar_observacao(request, idObservacao: int):
 def criar_observacao(request, data: SchemaObservaçãoIn):
     try:
         TsmyEuObservacaoFicha.objects.create(observacao=data.observacao)
-        return {"descricao": "Observação criada com sucesso"}
+        return 201, {"descricao": "Observação criada com sucesso"}
     except Exception as e:
         logger.error(f"Erro ao criar observação: {e}")
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
 
 
 @router.put(
-    "/{idObservacao}",
+    "alterar/{idObservacao}",
     response={
         200: SchemaObservaçãoOut,
         404: SchemaBase.RespostaErro,
         500: SchemaBase.RespostaErro,
     },
 )
-def atualizar_observacao(request, idObservacao: int, data: SchemaObservaçãoIn):
+def alterar_observacao(request, idObservacao: int, data: SchemaObservaçãoIn):
     try:
         obs = TsmyEuObservacaoFicha.objects.get(idObservacao=idObservacao)
         obs.usuarioalt = request.auth
@@ -94,12 +94,12 @@ def atualizar_observacao(request, idObservacao: int, data: SchemaObservaçãoIn)
     except TsmyEuObservacaoFicha.DoesNotExist:
         return 404, {"erro": {"descricao": "Observação não encontrada"}}
     except Exception as e:
-        logger.error(f"Erro ao atualizar observação: {e}")
+        logger.error(f"Erro ao alterar observação: {e}")
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
 
 
 @router.delete(
-    "/{idObservacao}",
+    "deletar/{idObservacao}",
     response={
         200: SchemaBase.Sucesso,
         404: SchemaBase.RespostaErro,
