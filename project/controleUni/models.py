@@ -305,7 +305,7 @@ class TsmyEuFichaColab(models.Model):
     nro_ca = models.CharField(max_length=5, blank=True, null=True)
     dt_validade = models.DateTimeField(blank=True, null=True)
     # Campo de Observação
-    idObservacao = models.ForeignKey(
+    id_observacao = models.ForeignKey(
         "TsmyEuObservacaoFicha",
         models.DO_NOTHING,
         blank=True,
@@ -569,7 +569,7 @@ tipoObservacao = {
 
 
 class TsmyEuObservacaoFicha(models.Model):
-    idObservacao = models.AutoField(primary_key=True)
+    id_observacao = models.AutoField(primary_key=True)
     observacao = models.CharField(max_length=200)
     tipo = models.CharField(
         max_length=4, blank=True, null=True, choices=tipoObservacao.items()

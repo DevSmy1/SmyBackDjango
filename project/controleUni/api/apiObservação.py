@@ -31,7 +31,7 @@ def buscar_observacoes(request):
     try:
         return (
             TsmyEuObservacaoFicha.objects.all()
-            .values("idObservacao", "observacao")
+            .values("id_observacao", "observacao")
             .order_by("observacao")
         )
     except Exception as e:
@@ -40,7 +40,7 @@ def buscar_observacoes(request):
 
 
 @router.get(
-    "/{idObservacao}",
+    "/{id_observacao}",
     response={
         200: SchemaObservaçãoOut,
         404: SchemaBase.RespostaErro,
@@ -48,9 +48,9 @@ def buscar_observacoes(request):
     },
     summary="Retorna uma observação",
 )
-def buscar_observacao(request, idObservacao: int):
+def buscar_observacao(request, id_observacao: int):
     try:
-        return TsmyEuObservacaoFicha.objects.get(idObservacao=idObservacao)
+        return TsmyEuObservacaoFicha.objects.get(id_observacao=id_observacao)
     except TsmyEuObservacaoFicha.DoesNotExist:
         return 404, {"erro": {"descricao": "Observação não encontrada"}}
     except Exception as e:
@@ -77,16 +77,16 @@ def criar_observacao(request, data: SchemaObservaçãoIn):
 
 
 @router.put(
-    "alterar/{idObservacao}",
+    "alterar/{id_observacao}",
     response={
         200: SchemaObservaçãoOut,
         404: SchemaBase.RespostaErro,
         500: SchemaBase.RespostaErro,
     },
 )
-def alterar_observacao(request, idObservacao: int, data: SchemaObservaçãoIn):
+def alterar_observacao(request, id_observacao: int, data: SchemaObservaçãoIn):
     try:
-        obs = TsmyEuObservacaoFicha.objects.get(idObservacao=idObservacao)
+        obs = TsmyEuObservacaoFicha.objects.get(id_observacao=id_observacao)
         obs.usuarioalt = request.auth
         obs.observacao = data.observacao
         obs.save()
@@ -99,7 +99,7 @@ def alterar_observacao(request, idObservacao: int, data: SchemaObservaçãoIn):
 
 
 @router.delete(
-    "deletar/{idObservacao}",
+    "deletar/{id_observacao}",
     response={
         200: SchemaBase.Sucesso,
         404: SchemaBase.RespostaErro,
@@ -107,9 +107,9 @@ def alterar_observacao(request, idObservacao: int, data: SchemaObservaçãoIn):
     },
     summary="Deleta uma observação",
 )
-def deletar_observacao(request, idObservacao: int):
+def deletar_observacao(request, id_observacao: int):
     try:
-        TsmyEuObservacaoFicha.objects.get(idObservacao=idObservacao).delete()
+        TsmyEuObservacaoFicha.objects.get(id_observacao=id_observacao).delete()
         return {"descricao": "Observação deletada com sucesso"}
     except TsmyEuObservacaoFicha.DoesNotExist:
         return 404, {"erro": {"descricao": "Observação não encontrada"}}

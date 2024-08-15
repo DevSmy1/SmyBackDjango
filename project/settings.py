@@ -15,7 +15,7 @@ from pathlib import Path
 import warnings
 from decouple import config, Csv
 import oracledb
-from .logging import LOGGING as LOG_CONFIG
+from project.logger_django import LOGGING as LOG_CONFIG
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

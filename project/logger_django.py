@@ -30,6 +30,12 @@ LOGGING = {
             ],
             "level": "WARNING",
         },
+        "ficha": {
+            "handlers": [
+                "fichaLog",
+            ],
+            "level": "WARNING",
+        },
     },
     "handlers": {
         "cargoLog": {
@@ -54,6 +60,12 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.FileHandler",
             "filename": os.path.join(BASE_DIR, "logs/observacao.log"),
+            "formatter": "simpleRe",
+        },
+        "fichaLog": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/ficha.log"),
             "formatter": "simpleRe",
         },
     },

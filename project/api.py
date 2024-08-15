@@ -20,6 +20,9 @@ from project.c5.api.apiEmpresa import (
 from project.controleUni.api.apiObservação import (
     CAMINHO_BASE as CAMINHO_BASE_OBSERVACAO,
 )
+from project.controleUni.api.apiFicha import (
+    CAMINHO_BASE as CAMINHO_BASE_FICHA,
+)
 
 # Router imports
 from project.barcode.api import router as barcodeRouter
@@ -29,6 +32,7 @@ from project.c5.api.apiMapFamAtributo import router as mapFamAtributoRouter
 from project.c5.api.apiEmpresa import router as empresaRouter
 from project.controleUni.api.apiAgrupador import router as agrupadorRouter
 from project.controleUni.api.apiObservação import router as observacaoRouter
+from project.controleUni.api.apiFicha import router as fichaRouter
 
 from project.intranet.models import TsmyIntranetusuario
 
@@ -55,6 +59,7 @@ api.add_router(CAMINHO_BASE_AGRUPADOR, agrupadorRouter, tags=["Agrupador"])
 api.add_router(CAMINHO_BASE_ATRIBUTO_C5, mapFamAtributoRouter, tags=["Agrupador"])
 api.add_router(CAMINHO_BASE_OBSERVACAO, observacaoRouter, tags=["Observação"])
 api.add_router(CAMINHO_BASE_EMPRESA_C5, empresaRouter, tags=["Empresa"])
+api.add_router(CAMINHO_BASE_FICHA, fichaRouter, tags=["Fichas"])
 
 
 @api.exception_handler(Unauthorized)

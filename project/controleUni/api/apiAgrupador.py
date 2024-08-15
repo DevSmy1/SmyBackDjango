@@ -5,8 +5,10 @@ from ninja import Router, Schema
 from ninja.pagination import paginate
 
 # from project.controleUni.schemas import SchemaCargo
+from project.c5.models import MapProduto
 from project.controleUni.schemas import (
     SchemaAgrupador,
+    SchemaProdutoOut,
     SchemaRelAgrupadorCargoOut,
     SchemaRelAgrupadorCargoin,
 )
@@ -256,4 +258,25 @@ def deletar_relacionamento_agrupador_cargo(request, cargo: int, valor: int):
         }
     except Exception as e:
         logger.error(f"Erro ao deletar relacionamento cargo x agrupador: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
+
+
+# Produtos
+@router.get(
+    "/produtos/{codigo}",
+    response={
+        200: List[SchemaProdutoOut],
+        404: SchemaBase.RespostaErro,
+        500: SchemaBase.RespostaErro,
+    },
+    summary="Retorna os produtos de um agrupador",
+    tags=["Produtos"],
+)
+def buscar_produtos_agrupador(request, codigo: int):
+    try:
+        return MapProduto.objects.filter(
+            seqfamilia__mapfamatributo__valor=codigo
+        ).order_by("descreduzida")
+    except Exception as e:
+        logger.error(f"Erro ao buscar produtos de um agrupador: {e}")
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
