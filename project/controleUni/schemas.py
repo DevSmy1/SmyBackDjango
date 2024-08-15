@@ -106,6 +106,8 @@ class SchemaFichaIn(Schema):
     nro_ca: int | None = None
     dt_validade: date | None = None
     id_observacao: int | None = None
+    nro_ca: int | None = None
     sit_produto: str
     nro_empresa_orig: int
     nro_empresa_dest: int
+    quantidade: int
