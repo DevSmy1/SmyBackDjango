@@ -100,6 +100,7 @@ class SchemaFichaOut(Schema):
 
 
 class SchemaFichaIn(Schema):
+    id_troca: int | None = None
     seqproduto: int
     matricula: int | None = None
     cpf: int | None = None
@@ -111,3 +112,4 @@ class SchemaFichaIn(Schema):
     nro_empresa_orig: int
     nro_empresa_dest: int
     quantidade: int
+    presencial: bool = False

@@ -316,6 +316,9 @@ class TsmyEuFichaColab(models.Model):
         # # managed = False
         db_table = "tsmy_eu_ficha_colab"
 
+    def __str__(self):
+        return f"{self.id_ficha} - {self.seqproduto}"
+
 
 class TsmyEuLancto(models.Model):
     id_lancto = models.AutoField(primary_key=True)
