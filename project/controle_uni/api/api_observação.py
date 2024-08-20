@@ -4,13 +4,13 @@ from typing import List
 from ninja import Router, Schema
 from ninja.pagination import paginate
 
-# from project.controleUni.schemas import SchemaCargo
-from project.controleUni.schemas import (
+# from project.controle_uni.schemas import SchemaCargo
+from project.controle_uni.schemas import (
     SchemaObservaçãoIn,
     SchemaObservaçãoOut,
 )
 import project.schemas as SchemaBase
-from project.controleUni.models import TsmyEuObservacaoFicha
+from project.controle_uni.models import TsmyEuObservacaoFicha
 
 logger = logging.getLogger("observacao")
 

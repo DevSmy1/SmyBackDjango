@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Meus APPS
-    "project.controleUni",
+    "project.controle_uni",
     "project.barcode",
     "project.intranet",
     "project.c5",

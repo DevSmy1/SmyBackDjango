@@ -1,10 +1,10 @@
 from project.c5.models import MapProduto
-from project.controleUni.models import (
+from project.controle_uni.models import (
     TsmyEuColaboradores,
     TsmyEuFichaColab,
     TsmyEuLancto,
 )
-from project.controleUni.schemas import SchemaAlterarFicha, SchemaFichaIn
+from project.controle_uni.schemas import SchemaAlterarFicha, SchemaFichaIn
 from project.intranet.models import TsmyIntranetusuario
 
 

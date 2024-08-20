@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ControleuniConfig(AppConfig):
+class ControleUniConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "project.controleUni"
+    name = "project.controle_uni"

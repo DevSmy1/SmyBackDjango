@@ -1,7 +1,7 @@
 import logging
 from django.db import IntegrityError
 import pandas as pd
-from project.controleUni.models import TsmyEuColaboradores
+from project.controle_uni.models import TsmyEuColaboradores
 
 logger = logging.getLogger("colab")
 

@@ -2,7 +2,7 @@ import os
 from PyPDF2 import PdfReader
 import pandas as pd
 
-from project.controleUni.models import TsmyEuCargos
+from project.controle_uni.models import TsmyEuCargos
 from project.intranet.models import TsmyIntranetusuario
 
 

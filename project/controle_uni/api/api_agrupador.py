@@ -4,16 +4,16 @@ from typing import List
 from ninja import Router, Schema
 from ninja.pagination import paginate
 
-# from project.controleUni.schemas import SchemaCargo
+# from project.controle_uni.schemas import SchemaCargo
 from project.c5.models import MapProduto
-from project.controleUni.schemas import (
+from project.controle_uni.schemas import (
     SchemaAgrupador,
     SchemaProdutoOut,
     SchemaRelAgrupadorCargoOut,
     SchemaRelAgrupadorCargoin,
 )
 import project.schemas as SchemaBase
-from project.controleUni.models import (
+from project.controle_uni.models import (
     TsmyEuCargoAgrup,
     TsmyEuCargoEpiUnif,
     TsmyEuCargos,

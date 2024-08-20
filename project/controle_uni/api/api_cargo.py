@@ -4,10 +4,10 @@ from typing import List
 
 from ninja import File, Router, Schema, UploadedFile
 
-from project.controleUni.core.cargo import carregarArquivoCargo
-from project.controleUni.schemas import SchemaCargo
+from project.controle_uni.core.cargo import carregarArquivoCargo
+from project.controle_uni.schemas import SchemaCargo
 import project.schemas as SchemaBase
-from project.controleUni.models import TsmyEuCargos
+from project.controle_uni.models import TsmyEuCargos
 from ninja.pagination import paginate
 
 logger = logging.getLogger("cargo")

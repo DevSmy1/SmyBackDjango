@@ -1,7 +1,7 @@
 from ninja import Field, Schema
 from datetime import date, datetime
 
-from project.controleUni.models import TsmyEuCargoAgrup
+from project.controle_uni.models import TsmyEuCargoAgrup
 
 
 # Cargo

@@ -5,15 +5,15 @@ from typing import List
 from ninja import File, Router, Schema, UploadedFile
 from ninja.pagination import paginate
 
-from project.controleUni.core.colab import carregarArquivoColab
-from project.controleUni.schemas import (
+from project.controle_uni.core.colab import carregarArquivoColab
+from project.controle_uni.schemas import (
     SchemaCargo,
     SchemaColabIn,
     SchemaColabOut,
     SchemaColabOutMin,
 )
 import project.schemas as SchemaBase
-from project.controleUni.models import TsmyEuColaboradores
+from project.controle_uni.models import TsmyEuColaboradores
 
 logger = logging.getLogger("colab")
 

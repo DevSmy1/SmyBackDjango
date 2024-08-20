@@ -2,13 +2,13 @@ from ninja import NinjaAPI
 from ninja.security import APIKeyHeader
 
 # Base paths imports
-from project.controleUni.api.api_cargo import (
+from project.controle_uni.api.api_cargo import (
     CAMINHO_BASE as CAMINHO_BASE_CARGO,
 )
-from project.controleUni.api.api_colab import (
+from project.controle_uni.api.api_colab import (
     CAMINHO_BASE as CAMINHO_BASE_COLAB,
 )
-from project.controleUni.api.api_agrupador import (
+from project.controle_uni.api.api_agrupador import (
     CAMINHO_BASE as CAMINHO_BASE_AGRUPADOR,
 )
 from project.c5.api.api_map_fam_atributo import (
@@ -17,22 +17,22 @@ from project.c5.api.api_map_fam_atributo import (
 from project.c5.api.api_empresa import (
     CAMINHO_BASE as CAMINHO_BASE_EMPRESA_C5,
 )
-from project.controleUni.api.api_observação import (
+from project.controle_uni.api.api_observação import (
     CAMINHO_BASE as CAMINHO_BASE_OBSERVACAO,
 )
-from project.controleUni.api.api_ficha import (
+from project.controle_uni.api.api_ficha import (
     CAMINHO_BASE as CAMINHO_BASE_FICHA,
 )
 
 # Router imports
 from project.barcode.api import router as barcodeRouter
-from project.controleUni.api.api_cargo import router as cargoRouter
-from project.controleUni.api.api_colab import router as colabRouter
+from project.controle_uni.api.api_cargo import router as cargoRouter
+from project.controle_uni.api.api_colab import router as colabRouter
 from project.c5.api.api_map_fam_atributo import router as mapFamAtributoRouter
 from project.c5.api.api_empresa import router as empresaRouter
-from project.controleUni.api.api_agrupador import router as agrupadorRouter
-from project.controleUni.api.api_observação import router as observacaoRouter
-from project.controleUni.api.api_ficha import router as fichaRouter
+from project.controle_uni.api.api_agrupador import router as agrupadorRouter
+from project.controle_uni.api.api_observação import router as observacaoRouter
+from project.controle_uni.api.api_ficha import router as fichaRouter
 
 from project.intranet.models import TsmyIntranetusuario
 

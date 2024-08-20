@@ -4,9 +4,9 @@ from typing import List
 
 from ninja import File, Router, Schema, UploadedFile
 
-from project.controleUni.core.cargo import carregarArquivoCargo
-from project.controleUni.models import TsmyEuFichaColab
-from project.controleUni.schemas import SchemaFichaOut
+from project.controle_uni.core.cargo import carregarArquivoCargo
+from project.controle_uni.models import TsmyEuFichaColab
+from project.controle_uni.schemas import SchemaFichaOut
 import project.schemas as SchemaBase
 
 logger = logging.getLogger("ficha")

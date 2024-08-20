@@ -1,11 +1,11 @@
-from project.controleUni.core.ficha import criar_ficha
-from project.controleUni.core.lancto import criar_lancto
-from project.controleUni.models import (
+from project.controle_uni.core.ficha import criar_ficha
+from project.controle_uni.core.lancto import criar_lancto
+from project.controle_uni.models import (
     TsmyEuColaboradores,
     TsmyEuFichaColab,
     TsmyEuLancto,
 )
-from project.controleUni.schemas import SchemaFichaIn
+from project.controle_uni.schemas import SchemaFichaIn
 from project.intranet.models import TsmyIntranetusuario
 from django.db.models import Max
 
