@@ -192,6 +192,24 @@ class TsmyEuCargoEpiUnif(models.Model):
         db_table = "tsmy_eu_cargo_epi_unif"
 
 
+class TIPO_FICHAS(models.TextChoices):
+    CADASTRADA = "C", "Cadastrada"
+    TROCA_ENVIO = "TE", "Troca Envio"
+    TROCA_RECEBIMENTO = "TR", "Troca Recebimento"
+    TROCA_RECEBIMENTO_ANTIGA = "TRA", "Troca Recebimento Antiga"
+    DEVOLUCAO = "D", "Devolução"
+    DEVOLUCAO_ANTIGA = "DA", "Devolução Antiga"
+    DEVOLUCAO_CARGO = "DC", "Devolução Cargo"
+    DEMISSAO = "DM", "Demissão"
+    ORDEM_REQUSICAO = "OR", "Ordem de Requisição"
+
+
+class STATUS_FICHAS(models.TextChoices):
+    ATIVO = "A", "Ativo"
+    CANCELADA = "C", "Cancelada"
+    DESATIVADA = "D", "Desativada"
+
+
 class TsmyEuFichaColab(models.Model):
     nroempresa = models.IntegerField(
         blank=True,
@@ -244,10 +262,10 @@ class TsmyEuFichaColab(models.Model):
         null=True,
     )
     sit_produto = models.CharField(
-        max_length=2,
+        max_length=3,
         blank=True,
         null=True,
-        db_comment="Tipos da Ficha: C(Cadastrada), T(Troca), A(Aguardando Aprovação de Troca), TA(Troca Antiga), D(Devolução), DC(Devolução de Cargo), DA(Devolução Antiga)",
+        choices=TIPO_FICHAS.choices,
     )
     cod_funcao = models.ForeignKey(
         "TsmyEuCargos",
@@ -257,7 +275,9 @@ class TsmyEuFichaColab(models.Model):
         blank=True,
         null=True,
     )
-    sit_ficha = models.CharField(max_length=1, blank=True, null=True)
+    sit_ficha = models.CharField(
+        max_length=1, blank=True, null=True, choices=STATUS_FICHAS.choices
+    )
     id_troca = models.IntegerField(
         blank=True,
         null=True,

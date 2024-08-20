@@ -113,3 +113,8 @@ class SchemaFichaIn(Schema):
     nro_empresa_dest: int
     quantidade: int
     presencial: bool = False
+    perda: bool | None = False
+
+
+class SchemaAlterarFicha(SchemaFichaIn):
+    id_ficha: int

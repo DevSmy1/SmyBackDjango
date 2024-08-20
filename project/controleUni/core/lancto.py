@@ -1,13 +1,16 @@
+from project.c5.models import MapProduto
 from project.controleUni.models import (
     TsmyEuColaboradores,
     TsmyEuFichaColab,
     TsmyEuLancto,
 )
-from project.controleUni.schemas import SchemaFichaIn
+from project.controleUni.schemas import SchemaAlterarFicha, SchemaFichaIn
 from project.intranet.models import TsmyIntranetusuario
 
 
-def pegar_cgo(dados: SchemaFichaIn):
+def pegar_cgo(dados: SchemaFichaIn | SchemaAlterarFicha):
+    if dados.perda:
+        return 722, "E"
     if dados.nro_empresa_orig == 1 and dados.nro_empresa_dest == 1:
         if dados.sit_produto in ["C", "TE"]:
             return 700, "S"
@@ -60,4 +63,33 @@ def criar_lancto(dados: SchemaFichaIn, id_fichas: list, usuario: TsmyIntranetusu
     except Exception as e:
         TsmyEuLancto.objects.filter(id_lancto__in=lancto).delete()
         TsmyEuFichaColab.objects.filter(id_ficha__in=id_fichas).delete()
+        raise e
+
+
+def alterar_lanctos(dados: SchemaAlterarFicha, usuario: TsmyIntranetusuario):
+    lanctos = TsmyEuLancto.objects.filter(id_ficha_id=dados.id_ficha)
+    matricula = TsmyEuColaboradores.objects.get(matricula=dados.matricula)
+    for lacnto in lanctos:
+        lacnto.seqproduto_id = dados.seqproduto  # type: ignore
+        lacnto.matricula = matricula  # type: ignore
+        lacnto.nroempdest = dados.nro_empresa_dest
+        lacnto.nroemporig = dados.nro_empresa_orig
+        cgo, tipo = pegar_cgo(dados)
+        lacnto.cgo_id = cgo  # type: ignore
+        lacnto.tipo = tipo
+
+        lacnto.usuarioalt = usuario
+        lacnto.full_clean()
+        lacnto.save()
+    return lanctos
+
+
+def deletar_lanctos(id_ficha: int):
+    try:
+        lanctos = TsmyEuLancto.objects.filter(id_ficha_id=id_ficha, dt_arquivo=None)
+        lanctos.delete()
+        return
+    except TsmyEuLancto.DoesNotExist:
+        raise ValueError("Lançamento não encontrado")
+    except Exception as e:
         raise e

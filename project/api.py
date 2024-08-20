@@ -2,37 +2,37 @@ from ninja import NinjaAPI
 from ninja.security import APIKeyHeader
 
 # Base paths imports
-from project.controleUni.api.apiCargo import (
+from project.controleUni.api.api_cargo import (
     CAMINHO_BASE as CAMINHO_BASE_CARGO,
 )
-from project.controleUni.api.apiColab import (
+from project.controleUni.api.api_colab import (
     CAMINHO_BASE as CAMINHO_BASE_COLAB,
 )
-from project.controleUni.api.apiAgrupador import (
+from project.controleUni.api.api_agrupador import (
     CAMINHO_BASE as CAMINHO_BASE_AGRUPADOR,
 )
-from project.c5.api.apiMapFamAtributo import (
+from project.c5.api.api_map_fam_atributo import (
     CAMINHO_BASE as CAMINHO_BASE_ATRIBUTO_C5,
 )
-from project.c5.api.apiEmpresa import (
+from project.c5.api.api_empresa import (
     CAMINHO_BASE as CAMINHO_BASE_EMPRESA_C5,
 )
-from project.controleUni.api.apiObservação import (
+from project.controleUni.api.api_observação import (
     CAMINHO_BASE as CAMINHO_BASE_OBSERVACAO,
 )
-from project.controleUni.api.apiFicha import (
+from project.controleUni.api.api_ficha import (
     CAMINHO_BASE as CAMINHO_BASE_FICHA,
 )
 
 # Router imports
 from project.barcode.api import router as barcodeRouter
-from project.controleUni.api.apiCargo import router as cargoRouter
-from project.controleUni.api.apiColab import router as colabRouter
-from project.c5.api.apiMapFamAtributo import router as mapFamAtributoRouter
-from project.c5.api.apiEmpresa import router as empresaRouter
-from project.controleUni.api.apiAgrupador import router as agrupadorRouter
-from project.controleUni.api.apiObservação import router as observacaoRouter
-from project.controleUni.api.apiFicha import router as fichaRouter
+from project.controleUni.api.api_cargo import router as cargoRouter
+from project.controleUni.api.api_colab import router as colabRouter
+from project.c5.api.api_map_fam_atributo import router as mapFamAtributoRouter
+from project.c5.api.api_empresa import router as empresaRouter
+from project.controleUni.api.api_agrupador import router as agrupadorRouter
+from project.controleUni.api.api_observação import router as observacaoRouter
+from project.controleUni.api.api_ficha import router as fichaRouter
 
 from project.intranet.models import TsmyIntranetusuario
 

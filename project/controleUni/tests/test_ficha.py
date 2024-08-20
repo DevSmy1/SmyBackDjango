@@ -1,10 +1,19 @@
 from django.test import TestCase
 from icecream import ic
 
-from project.controleUni.core.lancto import criar_lancto
+from project.controleUni.core.lancto import (
+    alterar_lanctos,
+    criar_lancto,
+    deletar_lanctos,
+)
 from project.controleUni.models import TsmyEuFichaColab, TsmyEuLancto
-from project.controleUni.schemas import SchemaFichaIn
-from project.controleUni.core.ficha import criar_ficha, verificar_quantidade_fichas
+from project.controleUni.schemas import SchemaAlterarFicha, SchemaFichaIn
+from project.controleUni.core.ficha import (
+    alterar_ficha,
+    criar_ficha,
+    desativar_ficha,
+    verificar_quantidade_fichas,
+)
 from project.intranet.models import TsmyIntranetusuario
 
 
@@ -14,7 +23,7 @@ class TestFicha(TestCase):
         self.dadosFicha = SchemaFichaIn(
             seqproduto=19161,
             matricula=600411,
-            sit_produto="TE",
+            sit_produto="C",
             nro_empresa_orig=1,
             nro_empresa_dest=2,
             quantidade=2,
@@ -65,4 +74,32 @@ class TestFicha(TestCase):
 
     def test_alterar_ficha(self):
         """Testar a alteração de uma ficha"""
-        ficha = TsmyEuFichaColab.objects.get(id_ficha=self.fichas_criadas[0])  # type: ignore
+        dadosAlterar = self.dadosFicha.dict()
+        dadosAlterar["id_ficha"] = self.fichas_criadas[0]
+        dadosAlterar["sit_produto"] = "TE"
+        dadosAlterar["matricula"] = 121523
+        dadosAlterar = SchemaAlterarFicha(**dadosAlterar)
+        ficha = TsmyEuFichaColab.objects.get(id_ficha=dadosAlterar.id_ficha)
+        fichaAlterada = alterar_ficha(dadosAlterar, self.usuario)
+        self.assertEqual(fichaAlterada.id_ficha, ficha.id_ficha)
+        self.assertNotEqual(fichaAlterada.sit_produto, ficha.sit_produto)
+        self.assertNotEqual(fichaAlterada.matricula, ficha.matricula)
+        lanctos = TsmyEuLancto.objects.filter(id_ficha=dadosAlterar.id_ficha)
+        lanctosAlterados = alterar_lanctos(dadosAlterar, self.usuario)
+        self.assertEqual(lanctos.count(), lanctosAlterados.count())
+        self.assertEqual(
+            lanctos.first().matricula,  # type: ignore
+            lanctosAlterados.first().matricula,  # type: ignore
+        )
+
+    def test_desativar_ficha(self):
+        """Testar a desativação de uma ficha"""
+        ficha = desativar_ficha(self.fichas_criadas[0], self.usuario)
+        self.assertEqual(ficha.sit_ficha, "D")
+        self.assertEqual(
+            TsmyEuLancto.objects.filter(id_ficha=ficha.id_ficha).count(), 1
+        )
+        deletar_lanctos(ficha.id_ficha)
+        self.assertEqual(
+            TsmyEuLancto.objects.filter(id_ficha=ficha.id_ficha).count(), 0
+        )
