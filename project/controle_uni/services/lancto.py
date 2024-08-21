@@ -12,16 +12,16 @@ def pegar_cgo(dados: SchemaFichaIn | SchemaAlterarFicha):
     if dados.perda:
         return 722, "E"
     if dados.nro_empresa_orig == 1 and dados.nro_empresa_dest == 1:
-        if dados.sit_produto in ["C", "TE"]:
+        if dados.sit_produto in ["C", "TE", "OR"]:
             return 700, "S"
         if dados.sit_produto in ["D", "TR", "TRA"]:
             return 600, "E"
     if (
         dados.nro_empresa_orig == 1
         and dados.nro_empresa_dest != 1
-        and dados.sit_produto in ["C", "TE"]
+        and dados.sit_produto in ["C", "TE", "OR"]
     ):
-        if dados.presencial:
+        if dados.presencial or dados.sit_produto == "OR":
             return 219, "S"
         return 221, "S"
     if (

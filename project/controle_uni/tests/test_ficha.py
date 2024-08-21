@@ -103,3 +103,37 @@ class TestFicha(TestCase):
         self.assertEqual(
             TsmyEuLancto.objects.filter(id_ficha=ficha.id_ficha).count(), 0
         )
+
+
+class TestFichaOrdemRequisicao(TestCase):
+    def setUp(self) -> None:
+        self.usuario = TsmyIntranetusuario.objects.get(pk=14)
+        self.dadosFicha = SchemaFichaIn(
+            seqproduto=19161,
+            cpf=14918877885,
+            sit_produto="OR",
+            nro_empresa_orig=1,
+            nro_empresa_dest=2,
+            quantidade=2,
+            id_observacao=1,
+            presencial=False,
+        )
+        return super().setUp()
+
+    def test_criar_ordem_requisicao(self):
+        fichas = criar_ficha(self.dadosFicha, self.usuario)
+        ficha = TsmyEuFichaColab.objects.get(id_ficha=fichas[0])  # type: ignore
+        self.assertEqual(ficha.sit_produto, "OR")
+        self.assertEqual(ficha.sit_ficha, "A")
+        self.assertEqual(ficha.matricula, None)
+        self.assertEqual(ficha.cpf.cpf, self.dadosFicha.cpf)  # type: ignore
+
+    def test_lanctos_ordem_requisicao(self):
+        fichas = criar_ficha(self.dadosFicha, self.usuario)
+        lanctos = criar_lancto(self.dadosFicha, fichas, self.usuario)
+        self.assertEqual(
+            TsmyEuLancto.objects.filter(id_lancto__in=lanctos, cgo=219).count(), 2
+        )
+        self.assertEqual(
+            TsmyEuFichaColab.objects.filter(id_ficha__in=fichas).count(), 2
+        )

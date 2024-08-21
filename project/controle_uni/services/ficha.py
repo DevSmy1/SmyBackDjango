@@ -72,6 +72,8 @@ def pegar_percentual_atual() -> List[Optional[float]]:
 
 def criar_ficha(dados: SchemaFichaIn, usuario: TsmyIntranetusuario) -> List[int]:
     fichas_criadas = []
+    matricula = None
+    cpf = None
     try:
         if not verificar_quantidade_fichas(dados):
             raise ValueError(
@@ -83,12 +85,16 @@ def criar_ficha(dados: SchemaFichaIn, usuario: TsmyIntranetusuario) -> List[int]
             raise ValueError("Preço ou data de custo do produto não encontrados")
 
         percentual = pegar_percentual_atual()
-        matricula = TsmyEuColaboradores.objects.get(matricula=dados.matricula)
+        if dados.matricula:
+            matricula = TsmyEuColaboradores.objects.get(matricula=dados.matricula)
+        if dados.cpf:
+            cpf = TsmyEuColaboradores.objects.get(cpf=dados.cpf)
 
         for _ in range(dados.quantidade):
             ficha = TsmyEuFichaColab(
                 seqproduto_id=dados.seqproduto,
-                matricula=matricula,
+                matricula=matricula or None,
+                cpf=cpf or None,
                 sit_produto=dados.sit_produto,
                 sit_ficha="A",
                 quantidade=1,
