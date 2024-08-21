@@ -4,7 +4,7 @@ from typing import List
 
 from ninja import File, Router, Schema, UploadedFile
 
-from project.controle_uni.core.cargo import carregarArquivoCargo
+from project.controle_uni.services.cargo import carregarArquivoCargo
 from project.controle_uni.schemas import SchemaCargo
 import project.schemas as SchemaBase
 from project.controle_uni.models import TsmyEuCargos

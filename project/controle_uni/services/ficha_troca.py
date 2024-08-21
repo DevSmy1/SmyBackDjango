@@ -1,5 +1,5 @@
-from project.controle_uni.core.ficha import criar_ficha
-from project.controle_uni.core.lancto import criar_lancto
+from project.controle_uni.services.ficha import criar_ficha
+from project.controle_uni.services.lancto import criar_lancto
 from project.controle_uni.models import (
     TsmyEuColaboradores,
     TsmyEuFichaColab,

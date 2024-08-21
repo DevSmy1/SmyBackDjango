@@ -1,9 +1,9 @@
 from django.test import TestCase
 from icecream import ic
 
-from project.controle_uni.core.ficha import criar_ficha
-from project.controle_uni.core.lancto import criar_lancto
-from project.controle_uni.core.ficha_troca import (
+from project.controle_uni.services.ficha import criar_ficha
+from project.controle_uni.services.lancto import criar_lancto
+from project.controle_uni.services.ficha_troca import (
     cancelar_troca,
     confirmar_envio,
     confirmar_recebimento,

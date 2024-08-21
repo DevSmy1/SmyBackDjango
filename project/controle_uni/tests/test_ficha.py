@@ -1,14 +1,14 @@
 from django.test import TestCase
 from icecream import ic
 
-from project.controle_uni.core.lancto import (
+from project.controle_uni.services.lancto import (
     alterar_lanctos,
     criar_lancto,
     deletar_lanctos,
 )
 from project.controle_uni.models import TsmyEuFichaColab, TsmyEuLancto
 from project.controle_uni.schemas import SchemaAlterarFicha, SchemaFichaIn
-from project.controle_uni.core.ficha import (
+from project.controle_uni.services.ficha import (
     alterar_ficha,
     criar_ficha,
     desativar_ficha,

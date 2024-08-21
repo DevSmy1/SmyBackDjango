@@ -5,7 +5,7 @@ from typing import List
 from ninja import File, Router, Schema, UploadedFile
 from ninja.pagination import paginate
 
-from project.controle_uni.core.colab import carregarArquivoColab
+from project.controle_uni.services.colab import carregarArquivoColab
 from project.controle_uni.schemas import (
     SchemaCargo,
     SchemaColabIn,
