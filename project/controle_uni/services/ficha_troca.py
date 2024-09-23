@@ -90,6 +90,7 @@ def confirmar_envio(id_ficha: int, dadosRecebimento: SchemaFichaIn, usuario):
         if dadosRecebimento.perda:
             raise ValueError("Envio não pode ser uma perda")
         if criar_lancto(dadosRecebimento, [id_ficha], usuario):
+            ficha.sit_produto = "C"
             ficha.sit_ficha = "D"
             ficha.save()
     except Exception as e:

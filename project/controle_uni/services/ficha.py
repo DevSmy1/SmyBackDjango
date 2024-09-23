@@ -20,16 +20,26 @@ from project.intranet.models import TsmyIntranetusuario
 
 def verificar_quantidade_fichas(dados: SchemaFichaIn) -> bool:
     try:
-        cargo_colab = TsmyEuColaboradores.objects.get(
-            matricula=dados.matricula
-        ).cod_funcao
+        colab = TsmyEuColaboradores.objects.get(matricula=dados.matricula)
         agrup = MapProduto.objects.get(
             pk=dados.seqproduto
         ).seqfamilia.mapfamatributo.valor
         quantidade_cadastrada = TsmyEuCargoEpiUnif.objects.get(
-            cod_funcao=cargo_colab, valor=agrup
+            cod_funcao=colab.cod_funcao, valor=agrup
         ).quantidade
-        return quantidade_cadastrada >= dados.quantidade  # type: ignore
+        quantidade_atual: int = (
+            TsmyEuFichaColab.objects.select_related(
+                "seqproduto__seqfamilia__mapfamatributo"
+            )
+            .filter(
+                matricula__matricula=colab.matricula,
+                seqproduto__seqfamilia__mapfamatributo__valor=agrup,
+                sit_ficha="A",
+            )
+            .exclude(sit_produto__in=["TE"])
+            .count()
+        )
+        return quantidade_cadastrada >= dados.quantidade + quantidade_atual  # type: ignore
     except TsmyEuColaboradores.DoesNotExist:
         raise ValueError("Colaborador não encontrado")
     except MapProduto.DoesNotExist:
@@ -96,6 +106,7 @@ def criar_ficha(dados: SchemaFichaIn, usuario: TsmyIntranetusuario) -> List[int]
                 matricula=matricula or None,
                 cpf=cpf or None,
                 sit_produto=dados.sit_produto,
+                id_troca=dados.id_troca or None,
                 sit_ficha="A",
                 quantidade=1,
                 nro_ca=dados.nro_ca or None,
