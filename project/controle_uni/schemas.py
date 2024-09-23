@@ -35,6 +35,7 @@ class SchemaColabOutMin(Schema):
     nome: str
     nroempresa: int
     cod_funcao: int | None = Field(None, alias="cod_funcao_id")
+    descricao_funcao: str | str = Field(None, alias="cod_funcao__funcao")
 
 
 class SchemaColabIn(Schema):
@@ -93,6 +94,7 @@ class SchemaFichaOut(Schema):
     agrupador: int | None = Field(
         None, alias="seqproduto.seqfamilia.mapfamatributo.valor"
     )
+    dt_inclusao: datetime | None = None
     nome_produto: str = Field(alias="seqproduto.descreduzida")
     sit_produto: str
     recibo_uni: int | None = Field(None, alias="reciboUni_id")
@@ -107,7 +109,6 @@ class SchemaFichaIn(Schema):
     nro_ca: int | None = None
     dt_validade: date | None = None
     id_observacao: int | None = None
-    nro_ca: int | None = None
     sit_produto: str
     nro_empresa_orig: int
     nro_empresa_dest: int
@@ -118,3 +119,9 @@ class SchemaFichaIn(Schema):
 
 class SchemaAlterarFicha(SchemaFichaIn):
     id_ficha: int
+
+
+class SchemaVerificarQuantidade(Schema):
+    matricula: int
+    agrup: int
+    quantidade: int

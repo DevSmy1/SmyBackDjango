@@ -41,6 +41,7 @@ class TsmyEuColaboradores(models.Model):
     genero = models.CharField(max_length=1, blank=True, null=True)
     dt_adm = models.DateField(blank=True, null=True, db_column="dt_admissao")
     dt_desligamento = models.DateField(blank=True, null=True)
+    candidato = models.BooleanField(blank=True, null=True)
     cod_funcao = models.ForeignKey(
         "TsmyEuCargos",
         models.DO_NOTHING,
