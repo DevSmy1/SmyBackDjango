@@ -192,6 +192,9 @@ class TestTrocaFicha(TestCase):
         self.assertEqual(
             TsmyEuFichaColab.objects.get(id_ficha=self.fichas_troca[1]).sit_ficha, "D"
         )
+        self.assertEqual(
+            TsmyEuFichaColab.objects.get(id_ficha=self.fichas_troca[1]).sit_produto, "C"
+        )
 
     def test_confirmar_envio_perda(self):
         """Testa se retorna um erro ao tentar enviar um item como perda"""
