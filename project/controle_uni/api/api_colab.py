@@ -49,6 +49,7 @@ def buscar_colabs_min(request):
             "nome",
             "nroempresa",
             "cod_funcao_id",
+            "cod_funcao__funcao",
         )
     except Exception as e:
         logger.error(f"Erro ao buscar colaboradores: {e}")
