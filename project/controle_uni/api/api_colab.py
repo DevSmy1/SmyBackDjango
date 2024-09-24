@@ -5,7 +5,7 @@ from typing import List
 from ninja import File, Router, Schema, UploadedFile
 from ninja.pagination import paginate
 
-from project.controle_uni.services.colab import carregarArquivoColab
+from project.controle_uni.services.colab import carregar_arquivo_colab
 from project.controle_uni.schemas import (
     SchemaCargo,
     SchemaColabIn,
@@ -79,11 +79,11 @@ def buscar_colab(request, id_colab: int):
     response={200: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
     summary="Carrega um arquivo com os colaboradores",
 )
-def carregar_arquivo_colab(request, arquivoColab: UploadedFile = File(...)):  # type: ignore
+def carregar_arquivo_colaborador(request, arquivoColab: UploadedFile = File(...)):  # type: ignore
     try:
         with open(CAMINHO_ARQUIVO, "wb") as f:
             f.write(arquivoColab.read())
-        carregarArquivoColab(CAMINHO_ARQUIVO, request.auth)
+        carregar_arquivo_colab(CAMINHO_ARQUIVO, request.auth)
         os.remove(CAMINHO_ARQUIVO)
         return {"descricao": "Arquivo carregado com sucesso"}
     except Exception as e:

@@ -4,7 +4,7 @@ from typing import List
 
 from ninja import File, Router, Schema, UploadedFile
 
-from project.controle_uni.services.cargo import carregarArquivoCargo
+from project.controle_uni.services.cargo import carregar_arquivo_cargo
 from project.controle_uni.schemas import SchemaCargo
 import project.schemas as SchemaBase
 from project.controle_uni.models import TsmyEuCargos
@@ -55,7 +55,7 @@ def carrega_arq_cargos(request, arquivoCargo: UploadedFile = File(...)):  # type
     try:
         with open(CAMINHO_ARQUIVO, "wb") as f:
             f.write(arquivoCargo.read())
-        carregarArquivoCargo(CAMINHO_ARQUIVO, request.auth)
+        carregar_arquivo_cargo(CAMINHO_ARQUIVO, request.auth)
         os.remove(CAMINHO_ARQUIVO)
         return {"descricao": "Arquivo carregado com sucesso"}
     except Exception as e:

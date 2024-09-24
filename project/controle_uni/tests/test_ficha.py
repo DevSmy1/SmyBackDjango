@@ -1,6 +1,7 @@
 from django.test import TestCase
 from icecream import ic
 
+from project.controle_uni.services.dados_epi import verificar_produto_epi
 from project.controle_uni.services.lancto import (
     alterar_lanctos,
     criar_lancto,

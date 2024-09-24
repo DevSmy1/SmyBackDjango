@@ -6,7 +6,7 @@ from project.controle_uni.models import TsmyEuColaboradores
 logger = logging.getLogger("colab")
 
 
-def carregarArquivoColab(caminhoArquivo, usuario):
+def carregar_arquivo_colab(caminhoArquivo, usuario):
     try:
         tabela = pd.read_excel(caminhoArquivo)
         for linha in range(0, len(tabela)):

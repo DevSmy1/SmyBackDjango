@@ -6,7 +6,7 @@ from project.controle_uni.models import TsmyEuCargos
 from project.intranet.models import TsmyIntranetusuario
 
 
-def carregarArquivoCargo(caminho: str, usuario: TsmyIntranetusuario):
+def carregar_arquivo_cargo(caminho: str, usuario: TsmyIntranetusuario):
     try:
         pdf = PdfReader(caminho)
         tabela = []
