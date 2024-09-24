@@ -3,10 +3,11 @@ import logging
 import os
 from typing import List
 
+from django.db import connection
 from ninja import File, Router, Schema, UploadedFile
 
 from project.c5.models import MapProduto
-from project.controle_uni.services.cargo import carregarArquivoCargo
+from project.controle_uni.services.cargo import carregar_arquivo_cargo
 from project.controle_uni.models import (
     TsmyEuCa,
     TsmyEuCargoEpiUnif,
@@ -120,7 +121,7 @@ def verificar_quantidade_fichas(request, dados: SchemaVerificarQuantidade):
         500: SchemaBase.RespostaErro,
     },
 )
-def valdiarCa(request, nro_ca: int):
+def validar_ca(request, nro_ca: int):
     try:
         if TsmyEuCa.objects.filter(ca=nro_ca).exists():
             ca = TsmyEuCa.objects.get(ca=nro_ca)
@@ -135,4 +136,27 @@ def valdiarCa(request, nro_ca: int):
         return 404, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
     except Exception as e:
         logger.error(f"Erro ao testar: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
+
+
+@router.get(
+    "/verificarProdutoEpi/{seq_produto}",
+    response={
+        200: SchemaBase.Sucesso,
+        404: SchemaBase.RespostaErro,
+        500: SchemaBase.RespostaErro,
+    },
+    tags=["Produtos"],
+)
+def verificar_produto_epi(request, seq_produto: int):
+    try:
+        with connection.cursor() as cursor:
+            result = cursor.execute(
+                f"select smy_fbusca_categ_nivel({seq_produto},2) from dual"
+            )
+            result = result.fetchall()  # type: ignore
+            if "EPI" in result[0][0]:
+                return {"descricao": "True"}
+        return {"descricao": "False"}
+    except Exception as e:
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}

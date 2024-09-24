@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 from project.controle_uni.models import TsmyEuCa
 from project.intranet.models import TsmyIntranetusuario
+from django.db import connection
 
 
 def verificarNroCa(nro_ca: int, usuario: TsmyIntranetusuario):
@@ -48,5 +49,19 @@ def consultarValidadeCa(nro_ca: int):
 
         if len(dados) == 4:
             return dados
+    except Exception as e:
+        raise e
+
+
+def verificar_produto_epi(seq_produto: int):
+    try:
+        with connection.cursor() as cursor:
+            result = cursor.execute(
+                f"select smy_fbusca_categ_nivel({seq_produto},2) from dual"
+            )
+            result = result.fetchall()  # type: ignore
+            if "EPI" in result[0][0]:
+                return True
+        return False
     except Exception as e:
         raise e
