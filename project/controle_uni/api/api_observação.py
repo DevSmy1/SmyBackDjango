@@ -87,7 +87,7 @@ def criar_observacao(request, data: SchemaObservaçãoIn):
 def alterar_observacao(request, id_observacao: int, data: SchemaObservaçãoIn):
     try:
         obs = TsmyEuObservacaoFicha.objects.get(id_observacao=id_observacao)
-        obs.usuarioalt = request.auth
+        obs.usuario_alteracao = request.auth
         obs.observacao = data.observacao
         obs.save()
         return obs

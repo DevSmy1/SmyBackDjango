@@ -34,7 +34,7 @@ from project.controle_uni.api.api_agrupador import router as agrupadorRouter
 from project.controle_uni.api.api_observação import router as observacaoRouter
 from project.controle_uni.api.api_ficha import router as fichaRouter
 
-from project.intranet.models import TsmyIntranetusuario
+from project.intranet.models import SmyUsuario, TsmyIntranetusuario
 
 
 class Unauthorized(Exception):
@@ -47,7 +47,8 @@ class GlobalAuth(APIKeyHeader):
     def authenticate(self, request, key):
         if key is None:
             raise Unauthorized("Não foi possível auntenticar o usuário")
-        login = TsmyIntranetusuario.objects.filter(login=key).first()
+        # login = TsmyIntranetusuario.objects.filter(login=key).first()
+        login = SmyUsuario.objects.filter(login=key.upper()).first()
         if login:
             return login
 

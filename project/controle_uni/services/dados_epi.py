@@ -2,11 +2,11 @@ import datetime
 from bs4 import BeautifulSoup
 import requests
 from project.controle_uni.models import TsmyEuCa
-from project.intranet.models import TsmyIntranetusuario
+from project.intranet.models import SmyUsuario
 from django.db import connection
 
 
-def verificarNroCa(nro_ca: int, usuario: TsmyIntranetusuario):
+def verificarNroCa(nro_ca: int, usuario: SmyUsuario):
     try:
         dados = consultarValidadeCa(nro_ca)
         if dados:
@@ -18,8 +18,8 @@ def verificarNroCa(nro_ca: int, usuario: TsmyIntranetusuario):
             TsmyEuCa.objects.create(
                 ca=nro_ca,
                 dt_validade=datetime.datetime.strptime(dados[2], "%d/%m/%Y"),
-                usuarioincl=usuario,
-                usuarioalt=usuario,
+                usuario_criacao=usuario,
+                usuario_alteracao=usuario,
             )
         return True
     except ValueError as e:

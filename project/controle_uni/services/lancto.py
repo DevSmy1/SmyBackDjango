@@ -5,7 +5,7 @@ from project.controle_uni.models import (
     TsmyEuLancto,
 )
 from project.controle_uni.schemas import SchemaAlterarFicha, SchemaFichaIn
-from project.intranet.models import TsmyIntranetusuario
+from project.intranet.models import SmyUsuario
 
 
 def pegar_cgo(dados: SchemaFichaIn | SchemaAlterarFicha):
@@ -35,7 +35,7 @@ def pegar_cgo(dados: SchemaFichaIn | SchemaAlterarFicha):
     raise ValueError("Situação inválida")
 
 
-def criar_lancto(dados: SchemaFichaIn, id_fichas: list, usuario: TsmyIntranetusuario):
+def criar_lancto(dados: SchemaFichaIn, id_fichas: list, usuario: SmyUsuario):
     lanctos = []
     try:
         cgo, tipo = pegar_cgo(dados)
@@ -50,8 +50,8 @@ def criar_lancto(dados: SchemaFichaIn, id_fichas: list, usuario: TsmyIntranetusu
                 quantidade=1,
                 nroemporig=dados.nro_empresa_orig,
                 nroempdest=dados.nro_empresa_dest,
-                usuarioincl=usuario,
-                usuarioalt=usuario,
+                usuario_criacao=usuario,
+                usuario_alteracao=usuario,
             )
             lancto.full_clean()
             lancto.save()
@@ -66,7 +66,7 @@ def criar_lancto(dados: SchemaFichaIn, id_fichas: list, usuario: TsmyIntranetusu
         raise e
 
 
-def alterar_lanctos(dados: SchemaAlterarFicha, usuario: TsmyIntranetusuario):
+def alterar_lanctos(dados: SchemaAlterarFicha, usuario: SmyUsuario):
     lanctos = TsmyEuLancto.objects.filter(id_ficha_id=dados.id_ficha)
     matricula = TsmyEuColaboradores.objects.get(matricula=dados.matricula)
     for lacnto in lanctos:
@@ -78,7 +78,7 @@ def alterar_lanctos(dados: SchemaAlterarFicha, usuario: TsmyIntranetusuario):
         lacnto.cgo_id = cgo  # type: ignore
         lacnto.tipo = tipo
 
-        lacnto.usuarioalt = usuario
+        lacnto.usuario_alteracao = usuario
         lacnto.full_clean()
         lacnto.save()
     return lanctos

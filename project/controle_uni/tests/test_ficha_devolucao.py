@@ -14,12 +14,12 @@ from project.controle_uni.services.ficha_devolucao import (
     criar_devolucao_antiga,
 )
 from project.controle_uni.services.lancto import criar_lancto
-from project.intranet.models import TsmyIntranetusuario
+from project.intranet.models import SmyUsuario
 
 
 class TestFichaDevolucao(TestCase):
     def setUp(self) -> None:
-        self.usuario = TsmyIntranetusuario.objects.get(pk=14)
+        self.usuario = SmyUsuario.objects.get(pk=14)
         self.dadosFicha = SchemaFichaIn(
             seqproduto=19161,
             matricula=600411,

@@ -76,7 +76,7 @@ def buscar_agrupador(request, codigo: int):
 def criar_agrupador(request, data: SchemaAgrupador):
     try:
         TsmyEuCargoAgrup.objects.create(
-            **data.dict(), usuarioincl=request.auth, usuarioalt=request.auth
+            **data.dict(), usuario_criacao=request.auth, usuario_alteracao=request.auth
         )
         return 201, {"descricao": "Agrupador criado com sucesso"}
     except Exception as e:
@@ -97,7 +97,7 @@ def alterar_agrupador(request, codigo: int, data: SchemaAgrupador):
     try:
         obj = TsmyEuCargoAgrup.objects.get(codigo=codigo)
         obj.descricao = data.descricao
-        obj.usuarioalt = request.auth
+        obj.usuario_alteracao = request.auth
         obj.save()
         return {"descricao": "Cargo atualizado com sucesso"}
     except TsmyEuCargoAgrup.DoesNotExist as e:
@@ -194,8 +194,8 @@ def criar_relacionamento_agrupador_cargo(
             cod_funcao_id=cargo,
             valor_id=data.valor,
             quantidade=data.quantidade,
-            usuarioincl=request.auth,
-            usuarioalt=request.auth,
+            usuario_criacao=request.auth,
+            usuario_alteracao=request.auth,
         )
         return 201, {"descricao": "Relacionamento criado com sucesso"}
     except TsmyEuCargos.DoesNotExist as e:
@@ -225,7 +225,7 @@ def alterar_relacionamento_agrupador_cargo(
     try:
         obj = TsmyEuCargoEpiUnif.objects.get(cod_funcao_id=cargo, valor_id=data.valor)
         obj.quantidade = data.quantidade
-        obj.usuarioalt = request.auth
+        obj.usuario_alteracao = request.auth
         obj.save()
         return {"descricao": "Relacionamento atualizado com sucesso"}
     except TsmyEuCargoEpiUnif.DoesNotExist as e:

@@ -15,12 +15,12 @@ from project.controle_uni.services.ficha import (
     desativar_ficha,
     verificar_quantidade_fichas,
 )
-from project.intranet.models import TsmyIntranetusuario
+from project.intranet.models import SmyUsuario
 
 
 class TestFicha(TestCase):
     def setUp(self) -> None:
-        self.usuario = TsmyIntranetusuario.objects.get(pk=14)
+        self.usuario = SmyUsuario.objects.get(pk=14)
         self.dadosFicha = SchemaFichaIn(
             seqproduto=19161,
             matricula=600411,
@@ -108,7 +108,7 @@ class TestFicha(TestCase):
 
 class TestFichaOrdemRequisicao(TestCase):
     def setUp(self) -> None:
-        self.usuario = TsmyIntranetusuario.objects.get(pk=14)
+        self.usuario = SmyUsuario.objects.get(pk=14)
         self.dadosFicha = SchemaFichaIn(
             seqproduto=19161,
             cpf=14918877885,

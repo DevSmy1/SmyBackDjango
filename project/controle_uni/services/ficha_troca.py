@@ -6,13 +6,13 @@ from project.controle_uni.models import (
     TsmyEuLancto,
 )
 from project.controle_uni.schemas import SchemaFichaIn
-from project.intranet.models import TsmyIntranetusuario
+from project.intranet.models import SmyUsuario
 from django.db.models import Max
 
 from icecream import ic
 
 
-def criar_troca(id_ficha: int, dadosFicha: SchemaFichaIn, usuario: TsmyIntranetusuario):
+def criar_troca(id_ficha: int, dadosFicha: SchemaFichaIn, usuario: SmyUsuario):
     fichasModificadas = []
     try:
         # pegar id de troca
@@ -39,9 +39,7 @@ def criar_troca(id_ficha: int, dadosFicha: SchemaFichaIn, usuario: TsmyIntranetu
         raise e
 
 
-def criar_rebimento(
-    id_ficha: int, dadosFicha: SchemaFichaIn, usuario: TsmyIntranetusuario
-):
+def criar_rebimento(id_ficha: int, dadosFicha: SchemaFichaIn, usuario: SmyUsuario):
     try:
         fichaRecebimento = TsmyEuFichaColab.objects.get(pk=id_ficha)
         fichaRecebimento.id_troca = dadosFicha.id_troca
@@ -49,7 +47,7 @@ def criar_rebimento(
             fichaRecebimento.id_observacao_id = dadosFicha.id_observacao  # type: ignore
         if fichaRecebimento.sit_produto != "TRA":
             fichaRecebimento.sit_produto = "TR"
-        fichaRecebimento.usuarioalt = usuario
+        fichaRecebimento.usuario_alteracao = usuario
         fichaRecebimento.full_clean()
         fichaRecebimento.save()
         return fichaRecebimento.id_ficha
@@ -59,7 +57,7 @@ def criar_rebimento(
         raise e
 
 
-def criar_envio(dadosFicha: SchemaFichaIn, usuario: TsmyIntranetusuario):
+def criar_envio(dadosFicha: SchemaFichaIn, usuario: SmyUsuario):
     try:
         dadosFicha.sit_produto = "TE"
         dadosFicha.quantidade = 1

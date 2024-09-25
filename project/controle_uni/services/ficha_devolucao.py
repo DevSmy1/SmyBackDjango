@@ -6,16 +6,16 @@ from project.controle_uni.models import (
     TsmyEuLancto,
 )
 from project.controle_uni.schemas import SchemaFichaIn
-from project.intranet.models import TsmyIntranetusuario
+from project.intranet.models import SmyUsuario
 
 from icecream import ic
 
 
-def criar_devolucao(id_ficha: int, usuario: TsmyIntranetusuario):
+def criar_devolucao(id_ficha: int, usuario: SmyUsuario):
     try:
         ficha = TsmyEuFichaColab.objects.get(pk=id_ficha)
         ficha.sit_produto = "D"
-        ficha.usuarioalt = usuario
+        ficha.usuario_alteracao = usuario
         ficha.full_clean()
         ficha.save()
         return ficha.id_ficha
@@ -25,7 +25,7 @@ def criar_devolucao(id_ficha: int, usuario: TsmyIntranetusuario):
         raise e
 
 
-def criar_devolucao_antiga(dadosFicha: SchemaFichaIn, usuario: TsmyIntranetusuario):
+def criar_devolucao_antiga(dadosFicha: SchemaFichaIn, usuario: SmyUsuario):
     try:
         dadosFicha.sit_produto = "DA"
         fichas = criar_ficha(dadosFicha, usuario)

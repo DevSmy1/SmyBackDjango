@@ -10,7 +10,7 @@ from project.controle_uni.services.ficha_troca import (
     criar_troca,
 )
 from project.controle_uni.schemas import SchemaFichaIn
-from project.intranet.models import TsmyIntranetusuario
+from project.intranet.models import SmyUsuario
 from project.controle_uni.models import (
     TsmyEuColaboradores,
     TsmyEuLancto,
@@ -21,7 +21,7 @@ from project.controle_uni.models import (
 class TestTrocaFicha(TestCase):
     def setUp(self) -> None:
         self.matricula = TsmyEuColaboradores.objects.get(matricula=600411)
-        self.usuario = TsmyIntranetusuario.objects.get(pk=14)
+        self.usuario = SmyUsuario.objects.get(pk=14)
         self.dadosFicha = SchemaFichaIn(
             seqproduto=19161,
             matricula=600411,
@@ -225,7 +225,7 @@ class TestTrocaFicha(TestCase):
 class TestTrocaAntiga(TestCase):
     def setUp(self) -> None:
         self.matricula = TsmyEuColaboradores.objects.get(matricula=600411)
-        self.usuario = TsmyIntranetusuario.objects.get(pk=14)
+        self.usuario = SmyUsuario.objects.get(pk=14)
         self.dadosFichaRecebimento = SchemaFichaIn(
             seqproduto=19161,
             matricula=600411,

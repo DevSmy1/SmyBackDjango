@@ -19,7 +19,7 @@ def carregar_arquivo_colab(caminhoArquivo, usuario):
                     "genero": tabela.iloc[linha, 7][0],  # type: ignore
                     "dt_adm": tabela.iloc[linha, 5],
                     "cod_funcao_id": tabela.iloc[linha, 3],
-                    "usuarioalt": usuario,
+                    "usuario_alteracao": usuario,
                 }
 
                 colab, created = TsmyEuColaboradores.objects.update_or_create(
@@ -28,7 +28,7 @@ def carregar_arquivo_colab(caminhoArquivo, usuario):
                 )
 
                 if created:
-                    colab.usuarioincl = usuario
+                    colab.usuario_criacao = usuario
 
                 colab.full_clean()
                 colab.save()

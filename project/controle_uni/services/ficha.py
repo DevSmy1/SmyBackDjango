@@ -15,7 +15,7 @@ from project.controle_uni.models import (
     TsmyEuParametro,
 )
 from project.controle_uni.schemas import SchemaAlterarFicha, SchemaFichaIn
-from project.intranet.models import TsmyIntranetusuario
+from project.intranet.models import SmyUsuario
 
 
 def verificar_quantidade_fichas(dados: SchemaFichaIn) -> bool:
@@ -80,7 +80,7 @@ def pegar_percentual_atual() -> List[Optional[float]]:
     return percentuais
 
 
-def criar_ficha(dados: SchemaFichaIn, usuario: TsmyIntranetusuario) -> List[int]:
+def criar_ficha(dados: SchemaFichaIn, usuario: SmyUsuario) -> List[int]:
     fichas_criadas = []
     matricula = None
     cpf = None
@@ -114,8 +114,8 @@ def criar_ficha(dados: SchemaFichaIn, usuario: TsmyIntranetusuario) -> List[int]
                 custoAtual=preco,
                 dataCusto=dataCusto,
                 percentual=percentual,
-                usuarioincl=usuario,
-                usuarioalt=usuario,
+                usuario_criacao=usuario,
+                usuario_alteracao=usuario,
             )
             ficha.full_clean()
             ficha.save()
@@ -129,7 +129,7 @@ def criar_ficha(dados: SchemaFichaIn, usuario: TsmyIntranetusuario) -> List[int]
         raise e
 
 
-def alterar_ficha(dados: SchemaAlterarFicha, usuario: TsmyIntranetusuario):
+def alterar_ficha(dados: SchemaAlterarFicha, usuario: SmyUsuario):
     ficha = TsmyEuFichaColab.objects.get(id_ficha=dados.id_ficha)
     for key, value in dados.dict(exclude_unset=True).items():
         if key == "seqproduto":
@@ -145,16 +145,16 @@ def alterar_ficha(dados: SchemaAlterarFicha, usuario: TsmyIntranetusuario):
             setattr(ficha, key, observacao)
             continue
         setattr(ficha, key, value)
-    ficha.usuarioalt = usuario
+    ficha.usuario_alteracao = usuario
     ficha.full_clean()
     ficha.save()
     return ficha
 
 
-def desativar_ficha(id_ficha: int, usuario: TsmyIntranetusuario):
+def desativar_ficha(id_ficha: int, usuario: SmyUsuario):
     ficha = TsmyEuFichaColab.objects.get(id_ficha=id_ficha)
     ficha.sit_ficha = "D"
-    ficha.usuarioalt = usuario
+    ficha.usuario_alteracao = usuario
     ficha.full_clean()
     ficha.save()
     return ficha

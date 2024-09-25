@@ -73,7 +73,7 @@ def carrega_arq_cargos(request, arquivoCargo: UploadedFile = File(...)):  # type
 def criar_cargo(request, data: SchemaCargo):
     try:
         TsmyEuCargos.objects.create(
-            **data.dict(), usuarioincl=request.auth, usuarioalt=request.auth
+            **data.dict(), usuario_criacao=request.auth, usuario_alteracao=request.auth
         )
         return 201, {"descricao": "Cargo criado com sucesso"}
     except Exception as e:
@@ -95,7 +95,7 @@ def alterar_cargo(request, data: SchemaCargo):
         cargo = TsmyEuCargos.objects.get(cod_funcao=data.cod_funcao)
         for key, value in data.dict(exclude_unset=True).items():
             setattr(cargo, key, value)
-        cargo.usuarioalt = request.auth
+        cargo.usuario_alteracao = request.auth
         cargo.full_clean()
         cargo.save()
         return {"descricao": "Cargo atualizado com sucesso"}

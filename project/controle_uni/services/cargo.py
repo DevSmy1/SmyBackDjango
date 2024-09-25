@@ -3,10 +3,10 @@ from PyPDF2 import PdfReader
 import pandas as pd
 
 from project.controle_uni.models import TsmyEuCargos
-from project.intranet.models import TsmyIntranetusuario
+from project.intranet.models import SmyUsuario
 
 
-def carregar_arquivo_cargo(caminho: str, usuario: TsmyIntranetusuario):
+def carregar_arquivo_cargo(caminho: str, usuario: SmyUsuario):
     try:
         pdf = PdfReader(caminho)
         tabela = []
@@ -36,10 +36,10 @@ def carregar_arquivo_cargo(caminho: str, usuario: TsmyIntranetusuario):
                 cargo = TsmyEuCargos(
                     cod_funcao=row[0],
                     funcao=row[1].strip(),
-                    usuarioalt=usuario,
+                    usuario_alteracao=usuario,
                 )
                 if not TsmyEuCargos.objects.get(cod_funcao=row[0]):
-                    cargo.usuarioincl = usuario
+                    cargo.usuario_criacao = usuario
                 cargo.save()
         except Exception as e:
             raise Exception("Erro ao carregar cargo: ", e)

@@ -115,7 +115,7 @@ def alterar_colab(request, id_colab: int, data: SchemaColabIn):
         colab = TsmyEuColaboradores.objects.get(id_colab=id_colab)
         for key, value in data.dict(exclude_unset=True).items():
             setattr(colab, key, value)
-        colab.usuarioalt = request.auth
+        colab.usuario_alteracao = request.auth
         colab.full_clean()
         colab.save()
         return {"descricao": "Colaborador atualizado com sucesso"}

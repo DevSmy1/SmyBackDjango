@@ -1,9 +1,31 @@
 from django.db import models
 from project.c5.models import MapProduto, MaxCodgeraloper
-from project.intranet.models import TsmyIntranetusuario
+from project.intranet.models import SmyUsuario, TsmyIntranetusuario
 
 
-class TsmyEuAutorizacao(models.Model):
+class BaseModel(models.Model):
+    usuario_criacao = models.ForeignKey(
+        SmyUsuario,
+        on_delete=models.DO_NOTHING,
+        related_name="%(class)s_usuario_criacao",
+        db_column="id_usuario_criacao",
+        null=True,
+    )
+    data_criacao = models.DateTimeField(auto_now_add=True, null=True)
+    usuario_alteracao = models.ForeignKey(
+        SmyUsuario,
+        on_delete=models.DO_NOTHING,
+        related_name="%(class)s_usuario_alteracao",
+        db_column="id_usuario_alteracao",
+        null=True,
+    )
+    data_alteracao = models.DateTimeField(auto_now=True, null=True)
+
+    class Meta:
+        abstract = True
+
+
+class TsmyEuAutorizacao(BaseModel):
     id_autorizacao = models.SmallAutoField(primary_key=True)
     usuarioincl = models.ForeignKey(
         TsmyIntranetusuario,
@@ -29,7 +51,7 @@ class TsmyEuAutorizacao(models.Model):
         db_table = "tsmy_eu_autorizacao"
 
 
-class TsmyEuColaboradores(models.Model):
+class TsmyEuColaboradores(BaseModel):
     id_colab = models.SmallAutoField(primary_key=True)
     nroempresa = models.IntegerField(
         blank=True,
@@ -41,7 +63,6 @@ class TsmyEuColaboradores(models.Model):
     genero = models.CharField(max_length=1, blank=True, null=True)
     dt_adm = models.DateField(blank=True, null=True, db_column="dt_admissao")
     dt_desligamento = models.DateField(blank=True, null=True)
-    candidato = models.BooleanField(blank=True, null=True)
     cod_funcao = models.ForeignKey(
         "TsmyEuCargos",
         models.DO_NOTHING,
@@ -94,7 +115,7 @@ class TsmyEuColaboradores(models.Model):
         return self.nome
 
 
-class TsmyEuCargos(models.Model):
+class TsmyEuCargos(BaseModel):
     cod_funcao = models.SmallAutoField(primary_key=True)
     funcao = models.CharField(max_length=50, blank=True, null=True)
     dt_inclusao = models.DateTimeField(blank=True, null=True)
@@ -121,7 +142,7 @@ class TsmyEuCargos(models.Model):
         db_table = "tsmy_eu_cargos"
 
 
-class TsmyEuCargoAgrup(models.Model):
+class TsmyEuCargoAgrup(BaseModel):
     """O model de Agrupador é uma tabela que usamos para criar um valor de agrupador que será igual ao da consinco para assim ser facil o acesso as familias."""
 
     codigo = models.SmallAutoField(primary_key=True, db_column="valor")
@@ -150,7 +171,7 @@ class TsmyEuCargoAgrup(models.Model):
         db_table = "tsmy_eu_cargo_agrup"
 
 
-class TsmyEuCargoEpiUnif(models.Model):
+class TsmyEuCargoEpiUnif(BaseModel):
     # seqfamilia = models.IntegerField(blank=True, null=True)
     cod_funcao = models.ForeignKey(
         TsmyEuCargos,
@@ -211,7 +232,7 @@ class STATUS_FICHAS(models.TextChoices):
     DESATIVADA = "D", "Desativada"
 
 
-class TsmyEuFichaColab(models.Model):
+class TsmyEuFichaColab(BaseModel):
     nroempresa = models.IntegerField(
         blank=True,
         null=True,
@@ -341,7 +362,7 @@ class TsmyEuFichaColab(models.Model):
         return f"{self.id_ficha} - {self.seqproduto}"
 
 
-class TsmyEuLancto(models.Model):
+class TsmyEuLancto(BaseModel):
     id_lancto = models.AutoField(primary_key=True)
     seqproduto = models.ForeignKey(
         MapProduto,
@@ -413,7 +434,7 @@ class TsmyEuLancto(models.Model):
         db_table = "tsmy_eu_lancto"
 
 
-class TsmyEuCodLogInform(models.Model):
+class TsmyEuCodLogInform(BaseModel):
     cod_inform = models.AutoField(primary_key=True)
     informacao = models.CharField(max_length=200)
 
@@ -422,7 +443,7 @@ class TsmyEuCodLogInform(models.Model):
         db_table = "tsmy_eu_cod_log_inform"
 
 
-class TsmyEuLog(models.Model):
+class TsmyEuLog(BaseModel):
     tabela = models.CharField(max_length=50)
     acao = models.CharField(max_length=20)
     campo = models.CharField(max_length=50)
@@ -451,7 +472,7 @@ class TsmyEuLog(models.Model):
         db_table = "tsmy_eu_log"
 
 
-class TsmyEuMovimentNf(models.Model):
+class TsmyEuMovimentNf(BaseModel):
     id_mov_nf = models.AutoField(primary_key=True)
     nroempresa_orig = models.IntegerField(
         blank=True,
@@ -497,7 +518,7 @@ class TsmyEuMovimentNf(models.Model):
         db_table = "tsmy_eu_moviment_nf"
 
 
-class TsmyEuParametro(models.Model):
+class TsmyEuParametro(BaseModel):
     id_parametro = models.SmallAutoField(primary_key=True)
     nome_parametro = models.CharField(max_length=25, blank=True, null=True)
     status = models.CharField(max_length=1, blank=True, null=True)
@@ -508,7 +529,7 @@ class TsmyEuParametro(models.Model):
         db_table = "tsmy_eu_parametro"
 
 
-class TsmyEuArquivo(models.Model):
+class TsmyEuArquivo(BaseModel):
     id_aquivo = models.AutoField(primary_key=True)
     nome_arquivo = models.CharField(max_length=100)
     arquivo_assinado = models.CharField(max_length=100, blank=True, null=True)
@@ -559,7 +580,7 @@ class TsmyEuArquivo(models.Model):
         db_table = "tsmy_eu_arquivo"
 
 
-class TsmyEuCa(models.Model):
+class TsmyEuCa(BaseModel):
     ca = models.CharField(primary_key=True, max_length=5)
     dt_validade = models.DateTimeField(blank=True, null=True)
     usuarioincl = models.ForeignKey(
@@ -592,7 +613,7 @@ tipoObservacao = {
 }
 
 
-class TsmyEuObservacaoFicha(models.Model):
+class TsmyEuObservacaoFicha(BaseModel):
     id_observacao = models.AutoField(primary_key=True)
     observacao = models.CharField(max_length=200)
     tipo = models.CharField(
