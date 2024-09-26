@@ -1,38 +1,10 @@
 from ninja import NinjaAPI
 from ninja.security import APIKeyHeader
 
-# Base paths imports
-from project.controle_uni.api.api_cargo import (
-    CAMINHO_BASE as CAMINHO_BASE_CARGO,
-)
-from project.controle_uni.api.api_colab import (
-    CAMINHO_BASE as CAMINHO_BASE_COLAB,
-)
-from project.controle_uni.api.api_agrupador import (
-    CAMINHO_BASE as CAMINHO_BASE_AGRUPADOR,
-)
-from project.c5.api.api_map_fam_atributo import (
-    CAMINHO_BASE as CAMINHO_BASE_ATRIBUTO_C5,
-)
-from project.c5.api.api_empresa import (
-    CAMINHO_BASE as CAMINHO_BASE_EMPRESA_C5,
-)
-from project.controle_uni.api.api_observação import (
-    CAMINHO_BASE as CAMINHO_BASE_OBSERVACAO,
-)
-from project.controle_uni.api.api_ficha import (
-    CAMINHO_BASE as CAMINHO_BASE_FICHA,
-)
-
-# Router imports
+# Router
 from project.barcode.api import router as barcodeRouter
-from project.controle_uni.api.api_cargo import router as cargoRouter
-from project.controle_uni.api.api_colab import router as colabRouter
-from project.c5.api.api_map_fam_atributo import router as mapFamAtributoRouter
-from project.c5.api.api_empresa import router as empresaRouter
-from project.controle_uni.api.api_agrupador import router as agrupadorRouter
-from project.controle_uni.api.api_observação import router as observacaoRouter
-from project.controle_uni.api.api_ficha import router as fichaRouter
+from project.controle_uni.route import routes as controleUniRoutes
+from project.c5.route import routes as c5Routes
 
 from project.intranet.models import SmyUsuario, TsmyIntranetusuario
 
@@ -49,18 +21,20 @@ class GlobalAuth(APIKeyHeader):
             raise Unauthorized("Não foi possível auntenticar o usuário")
         # login = TsmyIntranetusuario.objects.filter(login=key).first()
         login = SmyUsuario.objects.filter(login=key.upper()).first()
+        print(login)
         if login:
             return login
 
 
 api = NinjaAPI(auth=GlobalAuth())
-api.add_router(CAMINHO_BASE_CARGO, cargoRouter, tags=["Cargo"])
-api.add_router(CAMINHO_BASE_COLAB, colabRouter, tags=["Colaborador"])
-api.add_router(CAMINHO_BASE_AGRUPADOR, agrupadorRouter, tags=["Agrupador"])
-api.add_router(CAMINHO_BASE_ATRIBUTO_C5, mapFamAtributoRouter, tags=["Agrupador"])
-api.add_router(CAMINHO_BASE_OBSERVACAO, observacaoRouter, tags=["Observação"])
-api.add_router(CAMINHO_BASE_EMPRESA_C5, empresaRouter, tags=["Empresa"])
-api.add_router(CAMINHO_BASE_FICHA, fichaRouter, tags=["Fichas"])
+
+routes = []
+routes += c5Routes
+routes += controleUniRoutes
+
+
+for route in routes:
+    api.add_router(route[0], route[1], tags=route[2])
 
 
 @api.exception_handler(Unauthorized)
