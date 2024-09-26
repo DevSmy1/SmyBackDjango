@@ -20,7 +20,7 @@ from project.intranet.models import SmyUsuario
 
 class TestFicha(TestCase):
     def setUp(self) -> None:
-        self.usuario = SmyUsuario.objects.get(pk=14)
+        self.usuario = SmyUsuario.objects.get(pk=3749)
         self.dadosFicha = SchemaFichaIn(
             seqproduto=19161,
             matricula=600411,
@@ -37,6 +37,7 @@ class TestFicha(TestCase):
 
     def test_validar_quantidade_pedida(self):
         """Verificar se o colaborador pode pedir a quantidade de fichas"""
+        self.dadosFicha.quantidade = 0
         self.assertTrue(verificar_quantidade_fichas(self.dadosFicha))
         self.dadosFicha.quantidade = 4
         self.assertFalse(verificar_quantidade_fichas(self.dadosFicha))
@@ -108,10 +109,10 @@ class TestFicha(TestCase):
 
 class TestFichaOrdemRequisicao(TestCase):
     def setUp(self) -> None:
-        self.usuario = SmyUsuario.objects.get(pk=14)
+        self.usuario = SmyUsuario.objects.get(pk=3749)
         self.dadosFicha = SchemaFichaIn(
             seqproduto=19161,
-            cpf=14918877885,
+            cpf=51331384826,
             sit_produto="OR",
             nro_empresa_orig=1,
             nro_empresa_dest=2,

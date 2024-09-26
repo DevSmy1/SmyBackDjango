@@ -19,7 +19,7 @@ from project.intranet.models import SmyUsuario
 
 class TestFichaDevolucao(TestCase):
     def setUp(self) -> None:
-        self.usuario = SmyUsuario.objects.get(pk=14)
+        self.usuario = SmyUsuario.objects.get(pk=3749)
         self.dadosFicha = SchemaFichaIn(
             seqproduto=19161,
             matricula=600411,
@@ -52,6 +52,7 @@ class TestFichaDevolucao(TestCase):
         )
 
     def test_criar_devolucao_antiga(self):
+        self.dadosFicha.matricula = 121523
         self.dadosFicha.quantidade = 1
         ficha = criar_devolucao_antiga(self.dadosFicha, self.usuario)
         self.assertEqual(
@@ -149,6 +150,7 @@ class TestFichaDevolucao(TestCase):
         )
 
     def test_confirmar_devolucao_antiga(self):
+        self.dadosFicha.matricula = 121523
         self.dadosFicha.quantidade = 1
         ficha = criar_devolucao_antiga(self.dadosFicha, self.usuario)
         self.assertEqual(

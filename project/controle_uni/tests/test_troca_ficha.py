@@ -21,7 +21,7 @@ from project.controle_uni.models import (
 class TestTrocaFicha(TestCase):
     def setUp(self) -> None:
         self.matricula = TsmyEuColaboradores.objects.get(matricula=600411)
-        self.usuario = SmyUsuario.objects.get(pk=14)
+        self.usuario = SmyUsuario.objects.get(pk=3749)
         self.dadosFicha = SchemaFichaIn(
             seqproduto=19161,
             matricula=600411,
@@ -225,7 +225,7 @@ class TestTrocaFicha(TestCase):
 class TestTrocaAntiga(TestCase):
     def setUp(self) -> None:
         self.matricula = TsmyEuColaboradores.objects.get(matricula=600411)
-        self.usuario = SmyUsuario.objects.get(pk=14)
+        self.usuario = SmyUsuario.objects.get(pk=3749)
         self.dadosFichaRecebimento = SchemaFichaIn(
             seqproduto=19161,
             matricula=600411,

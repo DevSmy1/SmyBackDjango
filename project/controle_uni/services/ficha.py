@@ -20,7 +20,10 @@ from project.intranet.models import SmyUsuario
 
 def verificar_quantidade_fichas(dados: SchemaFichaIn) -> bool:
     try:
-        colab = TsmyEuColaboradores.objects.get(matricula=dados.matricula)
+        if dados.matricula:
+            colab = TsmyEuColaboradores.objects.get(matricula=dados.matricula)
+        if dados.cpf:
+            colab = TsmyEuColaboradores.objects.get(cpf=dados.cpf)
         agrup = MapProduto.objects.get(
             pk=dados.seqproduto
         ).seqfamilia.mapfamatributo.valor
@@ -122,10 +125,10 @@ def criar_ficha(dados: SchemaFichaIn, usuario: SmyUsuario) -> List[int]:
             fichas_criadas.append(ficha.id_ficha)
         return fichas_criadas
     except ValidationError as e:
-        TsmyEuFichaColab.objects.filter(id__in=fichas_criadas).delete()
+        TsmyEuFichaColab.objects.filter(id_ficha__in=fichas_criadas).delete()
         raise ValueError(f"Erro de validação: {e}")
     except Exception as e:
-        TsmyEuFichaColab.objects.filter(id__in=fichas_criadas).delete()
+        TsmyEuFichaColab.objects.filter(id_ficha__in=fichas_criadas).delete()
         raise e
 
 
