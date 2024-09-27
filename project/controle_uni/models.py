@@ -642,3 +642,21 @@ class TsmyEuObservacaoFicha(BaseModel):
     class Meta:
         # managed = False
         db_table = "tsmy_eu_observacao_ficha"
+
+
+class TsmyEuSetor(BaseModel):
+    cod_setor = models.SmallAutoField(primary_key=True)
+    nome_setor = models.CharField(max_length=50, blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = "tsmy_eu_setor"
+
+
+class TsmyEuFuncao(BaseModel):
+    cod_funcao = models.SmallAutoField(primary_key=True)
+    nome_funcao = models.CharField(max_length=50, blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = "tsmy_eu_funcao"

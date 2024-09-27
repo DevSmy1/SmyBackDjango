@@ -1,5 +1,3 @@
-from project.controle_uni.api.api_cargo import router as cargoRouter
-
 # Caminho
 from project.controle_uni.api.api_cargo import (
     CAMINHO_BASE as CAMINHO_BASE_CARGO,
@@ -18,6 +16,7 @@ from project.controle_uni.api.api_ficha import (
 )
 
 # Router
+from project.controle_uni.api.api_cargo import router as cargoRouter
 from project.controle_uni.api.api_colab import router as colabRouter
 from project.controle_uni.api.api_agrupador import router as agrupadorRouter
 from project.controle_uni.api.api_observação import router as observacaoRouter

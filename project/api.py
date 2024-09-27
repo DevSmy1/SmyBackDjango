@@ -5,6 +5,7 @@ from ninja.security import APIKeyHeader
 from project.barcode.api import router as barcodeRouter
 from project.controle_uni.route import routes as controleUniRoutes
 from project.c5.route import routes as c5Routes
+from project.setrab.route import routes as setrabRoutes
 
 from project.intranet.models import SmyUsuario, TsmyIntranetusuario
 
@@ -31,7 +32,7 @@ api = NinjaAPI(auth=GlobalAuth())
 routes = []
 routes += c5Routes
 routes += controleUniRoutes
-
+routes += setrabRoutes
 
 for route in routes:
     api.add_router(route[0], route[1], tags=route[2])
