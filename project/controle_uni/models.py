@@ -645,7 +645,7 @@ class TsmyEuObservacaoFicha(BaseModel):
 
 
 class TsmyEuSetor(BaseModel):
-    cod_setor = models.SmallAutoField(primary_key=True)
+    cod_setor = models.CharField(primary_key=True, max_length=13)
     nome_setor = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:

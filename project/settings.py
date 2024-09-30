@@ -31,7 +31,8 @@ SECRET_KEY = config("SECRET_KEY")
 AMBIENTE = config("AMBIENTE", default="DEV", cast=str)
 DEBUG = AMBIENTE != "PROD"
 
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="*", cast=Csv())
+# ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="*", cast=Csv())
+ALLOWED_HOSTS = ["localhost", "http://localhost:7048", "http://localhost:5500/"]
 
 
 # Application definition
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     "project.barcode",
     "project.intranet",
     "project.c5",
+    "project.setrab",
     # Others
     "ninja",
     "corsheaders",
@@ -157,6 +159,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:7048",
+    "http://localhost:5500",
     "https://developer.yamauchi.lan",
     "https://intranet.yamauchi.lan",
 ]
