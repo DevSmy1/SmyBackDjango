@@ -35,24 +35,24 @@ def carregar_arquivo_colab(caminhoArquivo, usuario):
                 colab_data = {
                     "nroempresa": tabela.iloc[linha, 0],
                     "matricula": tabela.iloc[linha, 1],
-                    "cpf": tabela.iloc[linha, 3],
-                    "nome": tabela.iloc[linha, 2],
-                    "genero": tabela.iloc[linha, 5][0],  # type: ignore
-                    "dt_adm": tabela.iloc[linha, 4],
-                    "cod_funcao_id": tabela.iloc[linha, 6],
+                    "cpf": tabela.iloc[linha, 2],
+                    "nome": tabela.iloc[linha, 4],
+                    "genero": tabela.iloc[linha, 7][0],  # type: ignore
+                    "dt_adm": tabela.iloc[linha, 5],
+                    "cod_funcao_id": tabela.iloc[linha, 3],
                     "usuario_alteracao": usuario,
                 }
 
                 cargo_data = CargoColabSchema(
-                    cod_cargo=tabela.iloc[linha, 6],  # type: ignore
-                    nome_cargo=tabela.iloc[linha, 7],  # type: ignore
+                    cod_cargo=tabela.iloc[linha, 8],  # type: ignore
+                    nome_cargo=tabela.iloc[linha, 9],  # type: ignore
                 )
 
                 criar_cargo(cargo_data, usuario)
 
                 funcao_data = FuncaoColabSchema(
-                    cod_funcao=tabela.iloc[linha, 8],  # type: ignore
-                    nome_funcao=tabela.iloc[linha, 9],  # type: ignore
+                    cod_funcao=tabela.iloc[linha, 3],  # type: ignore
+                    nome_funcao=tabela.iloc[linha, 6],  # type: ignore
                 )
 
                 criar_funcao(funcao_data, usuario)
