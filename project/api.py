@@ -22,7 +22,6 @@ class GlobalAuth(APIKeyHeader):
             raise Unauthorized("Não foi possível auntenticar o usuário")
         # login = TsmyIntranetusuario.objects.filter(login=key).first()
         login = SmyUsuario.objects.filter(login=key.upper()).first()
-        print(login)
         if login:
             return login
 

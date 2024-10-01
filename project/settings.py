@@ -192,6 +192,7 @@ CORS_ALLOW_METHODS = (
 
 # Logging
 warnings.filterwarnings("ignore", message="Signature .* does not match any known type")
+warnings.simplefilter(action="ignore", category=FutureWarning)
 
 LOGGING = LOG_CONFIG
 
