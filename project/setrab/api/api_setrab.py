@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from ninja import Router, Schema
+from ninja import File, Router, Schema, UploadedFile
 from ninja.pagination import paginate
 
 # from project.controle_uni.schemas import SchemaCargo
@@ -18,11 +18,13 @@ from project.controle_uni.models import (
     TsmyEuCargoEpiUnif,
     TsmyEuCargos,
 )
+from project.setrab.services.sincronizar_dados import atualizar_dados
 
 logger = logging.getLogger("agrupador")
 
 router = Router()
 CAMINHO_BASE = "/setrab"
+CAMINHO_ARQUIVO = "dados.xlsx"
 
 
 class Importacao(Schema):
@@ -69,17 +71,17 @@ def get_importacoes(request):
     return importacoes
 
 
-@router.get(
-    "/sincronizar",
-    response={
-        200: SchemaBase.Sucesso,
-        404: SchemaBase.RespostaErro,
-        500: SchemaBase.RespostaErro,
-    },
+@router.post(
+    "/sincronizar/",
+    response={200: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
+    summary="Carrega um arquivo com os colaboradores",
 )
-def sincronizar(request):
+def carregar_arquivo_colaborador(request, arquivoSinc: UploadedFile = File(...)):  # type: ignore
     try:
-        pass
+        with open(CAMINHO_ARQUIVO, "wb") as f:
+            f.write(arquivoSinc.read())
+        atualizar_dados(CAMINHO_ARQUIVO, request.auth)
+        return {"descricao": "Dados Sincronizados com sucesso"}
     except Exception as e:
         logger.error(f"Erro ao sincronizar: {e}")
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
