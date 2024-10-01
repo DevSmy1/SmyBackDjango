@@ -66,6 +66,7 @@ class SetrabSetorRel(BaseModel):
 
     id_setor = models.ForeignKey(TsmyEuSetor, on_delete=models.DO_NOTHING)
     id_setor_setrab = models.IntegerField()
+    nro_empresa = models.IntegerField()
 
     class Meta:
         db_table = "setrab_setor_rel"
@@ -81,12 +82,12 @@ class SetrabFuncaoRel(BaseModel):
         db_table = "setrab_funcao_rel"
 
 
-class SetrabColaboradorRel(BaseModel):
-    """Relacionamento entre colaborador que usamos e o colaborador do setrab"""
+# class SetrabColaboradorRel(BaseModel):
+#     """Relacionamento entre colaborador que usamos e o colaborador do setrab"""
 
-    id_colaborador = models.ForeignKey(TsmyEuColaboradores, on_delete=models.DO_NOTHING)
-    id_colaborador_setrab = models.IntegerField()
-    nro_empresa = models.IntegerField()
+#     id_colaborador = models.ForeignKey(TsmyEuColaboradores, on_delete=models.DO_NOTHING)
+#     id_colaborador_setrab = models.IntegerField()
+    
 
-    class Meta:
-        db_table = "setrab_colaborador_rel"
+#     class Meta:
+#         db_table = "setrab_colaborador_rel"
