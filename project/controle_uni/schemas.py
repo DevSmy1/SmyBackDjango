@@ -77,12 +77,12 @@ class SchemaProdutoOut(Schema):
 
 
 # Observação
-class SchemaObservaçãoOut(Schema):
+class SchemaObservacaoOut(Schema):
     id_observacao: int
     observacao: str
 
 
-class SchemaObservaçãoIn(Schema):
+class SchemaObservacaoIn(Schema):
     observacao: str
 
 

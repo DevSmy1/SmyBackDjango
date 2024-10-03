@@ -6,8 +6,8 @@ from ninja.pagination import paginate
 
 # from project.controle_uni.schemas import SchemaCargo
 from project.controle_uni.schemas import (
-    SchemaObservaçãoIn,
-    SchemaObservaçãoOut,
+    SchemaObservacaoIn,
+    SchemaObservacaoOut,
 )
 import project.schemas as SchemaBase
 from project.controle_uni.models import TsmyEuObservacaoFicha
@@ -21,7 +21,7 @@ CAMINHO_BASE = "/observacao"
 @router.get(
     "/",
     response={
-        200: List[SchemaObservaçãoOut],
+        200: List[SchemaObservacaoOut],
         404: SchemaBase.RespostaErro,
         500: SchemaBase.RespostaErro,
     },
@@ -42,7 +42,7 @@ def buscar_observacoes(request):
 @router.get(
     "/{id_observacao}",
     response={
-        200: SchemaObservaçãoOut,
+        200: SchemaObservacaoOut,
         404: SchemaBase.RespostaErro,
         500: SchemaBase.RespostaErro,
     },
@@ -67,7 +67,7 @@ def buscar_observacao(request, id_observacao: int):
     },
     summary="Cria uma observação",
 )
-def criar_observacao(request, data: SchemaObservaçãoIn):
+def criar_observacao(request, data: SchemaObservacaoIn):
     try:
         TsmyEuObservacaoFicha.objects.create(observacao=data.observacao)
         return 201, {"descricao": "Observação criada com sucesso"}
@@ -79,12 +79,12 @@ def criar_observacao(request, data: SchemaObservaçãoIn):
 @router.put(
     "alterar/{id_observacao}",
     response={
-        200: SchemaObservaçãoOut,
+        200: SchemaObservacaoOut,
         404: SchemaBase.RespostaErro,
         500: SchemaBase.RespostaErro,
     },
 )
-def alterar_observacao(request, id_observacao: int, data: SchemaObservaçãoIn):
+def alterar_observacao(request, id_observacao: int, data: SchemaObservacaoIn):
     try:
         obs = TsmyEuObservacaoFicha.objects.get(id_observacao=id_observacao)
         obs.usuario_alteracao = request.auth
