@@ -43,13 +43,14 @@ def processar_chunk(chunk, usuario):
         cargos_cache = {}
         funcoes_cache = {}
         setores_cache = {}
+        user_data = {
+            "usuario_criacao": usuario,
+            "usuario_alteracao": usuario,
+        }
 
         with transaction.atomic():
             for linha in range(len(chunk)):
-                if (
-                    isinstance(chunk.iloc[linha][3], (int, float))
-                    and chunk.iloc[linha][7] != "Criar SETRAB ?"
-                ):
+                if len(str(chunk.iloc[linha][3])) <= 6:
                     cod_funcao = chunk.iloc[linha][1]
                     if cod_funcao not in cargos_cache:
                         cargos_cache[cod_funcao] = obter_objeto(
@@ -59,40 +60,40 @@ def processar_chunk(chunk, usuario):
                     if not cargo:
                         continue
 
+                    SetrabCargoRel.objects.update_or_create(
+                        id_cargo=cargo,
+                        id_cargo_setrab=chunk.iloc[linha][3],
+                        nro_empresa=chunk.iloc[linha][0],
+                        defaults=user_data,
+                    )
+
                     nome_funcao = cargo.funcao
                     if nome_funcao not in funcoes_cache:
                         funcoes_cache[nome_funcao] = obter_objeto(
                             TsmyEuFuncao, nome_funcao=nome_funcao
                         )
+
                     funcao = funcoes_cache[nome_funcao]
                     if not funcao:
                         continue
 
+                    SetrabFuncaoRel.objects.update_or_create(
+                        id_funcao=funcao,
+                        id_funcao_setrab=chunk.iloc[linha][3],
+                        nro_empresa=chunk.iloc[linha][0],
+                        defaults=user_data,
+                    )
+
+                if len(str(chunk.iloc[linha][7])) <= 6:
                     cod_setor = chunk.iloc[linha][5]
                     if cod_setor not in setores_cache:
                         setores_cache[cod_setor] = obter_objeto(
                             TsmyEuSetor, cod_setor=cod_setor
                         )
+
                     setor = setores_cache[cod_setor]
                     if not setor:
                         continue
-
-                    user_data = {
-                        "usuario_criacao": usuario,
-                        "usuario_alteracao": usuario,
-                    }
-
-                    SetrabCargoRel.objects.update_or_create(
-                        id_cargo=cargo,
-                        id_cargo_setrab=chunk.iloc[linha][3],
-                        defaults=user_data,
-                    )
-
-                    SetrabFuncaoRel.objects.update_or_create(
-                        id_funcao=funcao,
-                        id_funcao_setrab=chunk.iloc[linha][3],
-                        defaults=user_data,
-                    )
 
                     SetrabSetorRel.objects.update_or_create(
                         id_setor=setor,
@@ -110,7 +111,7 @@ def atualizar_dados(arquivo, usuario):
         num_planilhas = len(xls.sheet_names)
         for i in range(num_planilhas):
             df = pd.read_excel(arquivo, sheet_name=i)
-            chunk_size = 1000
+            chunk_size = 10000
             for start in range(0, len(df), chunk_size):
                 end = start + chunk_size
                 chunk = df[start:end]
