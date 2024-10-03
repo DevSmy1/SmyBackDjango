@@ -1,4 +1,6 @@
+from datetime import date
 import logging
+import os
 from typing import List
 
 from ninja import File, Router, Schema, UploadedFile
@@ -18,6 +20,7 @@ from project.controle_uni.models import (
     TsmyEuCargoEpiUnif,
     TsmyEuCargos,
 )
+from project.setrab.services.importacao import admissao, demissao, mudanca_funcao
 from project.setrab.services.sincronizar_dados import atualizar_dados
 
 logger = logging.getLogger("agrupador")
@@ -25,6 +28,10 @@ logger = logging.getLogger("agrupador")
 router = Router()
 CAMINHO_BASE = "/setrab"
 CAMINHO_ARQUIVO = "dados.xlsx"
+ARQUIVO_ADMISSAO = "ADMISSAO.xls"
+ARQUIVO_DEMISSAO = "DEMISSAO.xls"
+ARQUIVO_MOD_FUNCAO = "MODFUNCAO.xls"
+ARQUIVO_TRANSFERENCIA = "TRANSFERENCIA.xls"
 
 
 class Importacao(Schema):
@@ -71,16 +78,139 @@ def get_importacoes(request):
     return importacoes
 
 
+class AdmissaoSchema(Schema):
+    id_empresa: int
+    id_funcionario: str
+    nome: str
+    data_admissao: date
+    data_nascimento: date
+    sexo: str
+    id_cargo: int
+    id_setor: int
+    possui_vinculo: str
+
+
+@router.post(
+    "/importar/admissao/",
+    response={200: List[AdmissaoSchema], 500: SchemaBase.RespostaErro},
+    summary="Pega os dados do arquivo de admissão",
+)
+def importar_arquivo_admissao(
+    request,
+    data_filtro: date,
+    arquivo_admissao: UploadedFile = File(...),  # type: ignore
+):
+    try:
+        with open(ARQUIVO_ADMISSAO, "wb") as f:
+            f.write(arquivo_admissao.read())
+        dados = admissao(ARQUIVO_ADMISSAO, data_filtro)
+        os.remove(ARQUIVO_ADMISSAO)
+        return dados
+    except Exception as e:
+        logger.error(f"Erro ao sincronizar: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
+
+
+class DemissaoSchema(Schema):
+    id_empresa: int
+    id_funcionario: str
+    data_demissao: date
+
+
+@router.post(
+    "/importar/demissao/",
+    response={200: List[DemissaoSchema], 500: SchemaBase.RespostaErro},
+    summary="Pega os dados do arquivo de demissão",
+)
+def importar_arquivo_demissao(
+    request,
+    data_filtro: date,
+    arquivo_demissao: UploadedFile = File(...),  # type: ignore
+):
+    try:
+        with open(ARQUIVO_DEMISSAO, "wb") as f:
+            f.write(arquivo_demissao.read())
+        dados = demissao(ARQUIVO_DEMISSAO, data_filtro)
+        os.remove(ARQUIVO_DEMISSAO)
+        return dados
+    except Exception as e:
+        logger.error(f"Erro ao sincronizar: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
+
+
+class MudFuncaoSchema(Schema):
+    id_funcionario: str
+    id_empresa: int
+    id_cargo: int
+    id_setor: int
+    data_mud_func: date
+
+
+@router.post(
+    "/importar/mudFuncao/",
+    response={200: List[MudFuncaoSchema], 500: SchemaBase.RespostaErro},
+    summary="Pega os dados do arquivo de mudança de função",
+)
+def importar_arquivo_mudanca_funcao(
+    request,
+    data_filtro: date,
+    arquivo_mudanca_funcao: UploadedFile = File(...),  # type: ignore
+):
+    try:
+        with open(ARQUIVO_MOD_FUNCAO, "wb") as f:
+            f.write(arquivo_mudanca_funcao.read())
+        dados = mudanca_funcao(ARQUIVO_MOD_FUNCAO, data_filtro)
+        os.remove(ARQUIVO_MOD_FUNCAO)
+        return dados
+    except Exception as e:
+        logger.error(f"Erro ao sincronizar: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
+
+
+class TransferenciaSchema(Schema):
+    id_funcionario: str
+    id_empresa: int
+    id_empresa_destino: int
+    id_cargo: int
+    id_setor: int
+    data_transferencia: date
+
+
+@router.post(
+    "/importar/transferencia/",
+    response={200: List[TransferenciaSchema], 500: SchemaBase.RespostaErro},
+    summary="Peag os dados do arquivo de transferência",
+)
+def importar_arquivo_transferencia(
+    request,
+    data_filtro: date,
+    arquivo_transferencia: UploadedFile = File(...),  # type: ignore
+):
+    try:
+        with open(ARQUIVO_TRANSFERENCIA, "wb") as f:
+            f.write(arquivo_transferencia.read())
+        dados = mudanca_funcao(ARQUIVO_TRANSFERENCIA, data_filtro)
+        os.remove(ARQUIVO_TRANSFERENCIA)
+        return dados
+    except Exception as e:
+        logger.error(f"Erro ao sincronizar: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
+
+
 @router.post(
     "/sincronizar/",
     response={200: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
-    summary="Carrega um arquivo com os colaboradores",
+    summary="Sincroniza os cargos e setores",
 )
-def carregar_arquivo_colaborador(request, arquivoSinc: UploadedFile = File(...)):  # type: ignore
+def sincronizar_dados(
+    request,
+    arquivo_sincronizacao: UploadedFile = File(...),  # type: ignore
+):
     try:
         with open(CAMINHO_ARQUIVO, "wb") as f:
-            f.write(arquivoSinc.read())
+            f.write(arquivo_sincronizacao.read())
         atualizar_dados(CAMINHO_ARQUIVO, request.auth)
+        os.remove(CAMINHO_ARQUIVO)
         return {"descricao": "Dados Sincronizados com sucesso"}
     except Exception as e:
         logger.error(f"Erro ao sincronizar: {e}")
