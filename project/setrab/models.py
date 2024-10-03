@@ -56,6 +56,7 @@ class SetrabCargoRel(BaseModel):
 
     id_cargo = models.ForeignKey(TsmyEuCargos, on_delete=models.DO_NOTHING)
     id_cargo_setrab = models.IntegerField()
+    nro_empresa = models.IntegerField(null=True)
 
     class Meta:
         db_table = "setrab_cargo_rel"
@@ -66,7 +67,7 @@ class SetrabSetorRel(BaseModel):
 
     id_setor = models.ForeignKey(TsmyEuSetor, on_delete=models.DO_NOTHING)
     id_setor_setrab = models.IntegerField()
-    nro_empresa = models.IntegerField()
+    nro_empresa = models.IntegerField(null=True)
 
     class Meta:
         db_table = "setrab_setor_rel"
@@ -77,6 +78,7 @@ class SetrabFuncaoRel(BaseModel):
 
     id_funcao = models.ForeignKey(TsmyEuFuncao, on_delete=models.DO_NOTHING)
     id_funcao_setrab = models.IntegerField()
+    nro_empresa = models.IntegerField(null=True)
 
     class Meta:
         db_table = "setrab_funcao_rel"
@@ -87,7 +89,7 @@ class SetrabFuncaoRel(BaseModel):
 
 #     id_colaborador = models.ForeignKey(TsmyEuColaboradores, on_delete=models.DO_NOTHING)
 #     id_colaborador_setrab = models.IntegerField()
-    
+
 
 #     class Meta:
 #         db_table = "setrab_colaborador_rel"
