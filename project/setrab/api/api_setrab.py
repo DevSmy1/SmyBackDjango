@@ -20,6 +20,7 @@ from project.controle_uni.models import (
     TsmyEuCargoEpiUnif,
     TsmyEuCargos,
 )
+from project.setrab.models import SetrabArquivoImportacao
 from project.setrab.schemas import (
     AdmissaoSchema,
     ConfirmarAdmissaoSchema,
@@ -38,8 +39,12 @@ from project.setrab.services.importacao import (
     transferencia,
 )
 from project.setrab.services.sincronizar_dados import atualizar_dados
+from project.setrab.services.sincronizar_sgg import (
+    sincronizar_admissao_sgg,
+    sincronizar_demissao_sgg,
+)
 
-logger = logging.getLogger("agrupador")
+logger = logging.getLogger("sgg")
 
 router = Router()
 CAMINHO_BASE = "/setrab"
@@ -49,39 +54,29 @@ ARQUIVO_DEMISSAO = "DEMISSAO.xls"
 ARQUIVO_MOD_FUNCAO = "MODFUNCAO.xls"
 ARQUIVO_TRANSFERENCIA = "TRANSFERENCIA.xls"
 
+meses_em_portugues = [
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
+]
 
-@router.get("/", response=List[ImportacaoSchema])
+
+@router.get("/importacoes", response=List[ImportacaoSchema])
 def get_importacoes(request):
-    importacoes = [
-        ImportacaoSchema(
-            id=1,
-            nome_arquivo="arquivo1.csv",
-            mes="Janeiro",
-            usuario="user1",
-            status="Concluído",
-            resposta_servidor="Sucesso",
-            data_hora="2022-01-01 10:00:00",
-        ),
-        ImportacaoSchema(
-            id=2,
-            nome_arquivo="arquivo2.csv",
-            mes="Fevereiro",
-            usuario="user2",
-            status="Em andamento",
-            resposta_servidor="Aguardando",
-            data_hora="2022-02-01 14:30:00",
-        ),
-        ImportacaoSchema(
-            id=3,
-            nome_arquivo="arquivo3.csv",
-            mes="Março",
-            usuario="user3",
-            status="Falha",
-            resposta_servidor="Erro",
-            data_hora="2022-03-01 09:15:00",
-        ),
-    ]
-    return importacoes
+    try:
+        return SetrabArquivoImportacao.objects.all()
+    except Exception as e:
+        logger.error(f"Erro ao buscar importações: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
 
 
 @router.post(
@@ -110,10 +105,9 @@ def importar_arquivo_admissao(
     response={200: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
     summary="Sincroniza os dados de admissão",
 )
-def sincronizar_admissao(request, dados: ConfirmarAdmissaoSchema):
+def sincronizar_admissao(request, data: ConfirmarAdmissaoSchema):
     try:
-        for dado in dados:
-            print(dado)
+        sincronizar_admissao_sgg(data.dados)
         return {"descricao": "Dados Sincronizados com sucesso"}
     except Exception as e:
         logger.error(f"Erro ao sincronizar: {e}")
@@ -146,10 +140,18 @@ def importar_arquivo_demissao(
     response={200: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
     summary="Sincroniza os dados de demissão",
 )
-def sincronizar_demissao(request, dados: ConfirmarDemissaoSchema):
+def sincronizar_demissao(request, data: ConfirmarDemissaoSchema):
     try:
-        for dado in dados:
-            print(dado)
+        erros = sincronizar_demissao_sgg(data.dados)
+        arquivo = {
+            "status": "Sinconizado",
+            "nome_arquivo": data.nome_arquivo,
+            "mes": meses_em_portugues[data.mes.month - 1],
+            "resposta_servidor": str(erros),
+        }
+        SetrabArquivoImportacao.objects.create(
+            **arquivo, usuario_criacao=request.auth, usuario_alteracao=request.auth
+        )
         return {"descricao": "Dados Sincronizados com sucesso"}
     except Exception as e:
         logger.error(f"Erro ao sincronizar: {e}")
@@ -182,9 +184,9 @@ def importar_arquivo_mudanca_funcao(
     response={200: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
     summary="Sincroniza os dados de mudança de função",
 )
-def sincronizar_mudanca_funcao(request, dados: ConfirmarMudFuncaoSchema):
+def sincronizar_mudanca_funcao(request, data: ConfirmarMudFuncaoSchema):
     try:
-        for dado in dados:
+        for dado in data:
             print(dado)
         return {"descricao": "Dados Sincronizados com sucesso"}
     except Exception as e:
@@ -218,9 +220,9 @@ def importar_arquivo_transferencia(
     response={200: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
     summary="Sincroniza os dados de transferência",
 )
-def sincronizar_transferencia(request, dados: ConfirmarTransferenciaSchema):
+def sincronizar_transferencia(request, data: ConfirmarTransferenciaSchema):
     try:
-        for dado in dados:
+        for dado in data:
             print(dado)
         return {"descricao": "Dados Sincronizados com sucesso"}
     except Exception as e:

@@ -36,6 +36,12 @@ LOGGING = {
             ],
             "level": "WARNING",
         },
+        "sgg": {
+            "handlers": [
+                "sggLog",
+            ],
+            "level": "WARNING",
+        },
     },
     "handlers": {
         "cargoLog": {
@@ -66,6 +72,12 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.FileHandler",
             "filename": os.path.join(BASE_DIR, "logs/ficha.log"),
+            "formatter": "simpleRe",
+        },
+        "sggLog": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/sgg.log"),
             "formatter": "simpleRe",
         },
     },

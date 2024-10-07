@@ -1,8 +1,11 @@
 from datetime import date
+import logging
 from project.controle_uni.models import TsmyEuCargos, TsmyEuColaboradores  # noqa: E402
 from project.setrab.models import SetrabCargoRel, SetrabEmpresaRel, SetrabSetorRel  # noqa: E402
 
 import pandas as pd
+
+logger = logging.getLogger("sgg")
 
 
 def admissao(arquivo: str, data: date):
@@ -51,7 +54,7 @@ def admissao(arquivo: str, data: date):
                 dados.append(colab)
 
             except Exception as e:
-                print(e)
+                logger.warning(f"Erro ao criar json de Admissão: {e}")
                 colab = {
                     "id_empresa": empresa.id_empresa_setrab,
                     "id_funcionario": cpf,
@@ -68,6 +71,7 @@ def admissao(arquivo: str, data: date):
                 dados.append(colab)
         return dados
     except Exception as e:
+        logger.error(f"Erro na Função admissao: {e}")
         raise e
 
 
@@ -100,7 +104,7 @@ def demissao(arquivo: str, data: date):
                 }
                 dados.append(demissao)
             except Exception as e:
-                print(e)
+                logger.warning(f"Erro ao criar json de Demissão: {e}")
                 demissao = {
                     "id_empresa": empresa.id_empresa_setrab,
                     "id_funcionario": cpf,
@@ -112,6 +116,7 @@ def demissao(arquivo: str, data: date):
                 dados.append(demissao)
         return dados
     except Exception as e:
+        logger.error(f"Erro na Função demissao: {e}")
         raise e
 
 
@@ -156,6 +161,7 @@ def mudanca_funcao(arquivo: str, data: date):
                 }
                 dados.append(mudanca_funcao)
             except Exception as e:
+                logger.warning(f"Erro ao criar json de Mudança de Função: {e}")
                 muda_funcao = {
                     "id_funcionario": cpf,
                     "id_empresa": empresa.id_empresa_setrab,
@@ -169,6 +175,7 @@ def mudanca_funcao(arquivo: str, data: date):
                 dados.append(muda_funcao)
         return dados
     except Exception as e:
+        logger.error(f"Eroo na Função mudanca_funcao: {e}")
         raise e
 
 
@@ -216,7 +223,7 @@ def transferencia(arquivo: str, data: date):
                 }
                 dados.append(transferencia)
             except Exception as e:
-                print(e)
+                logger.warning(f"Erro ao criar json de Transferencia: {e}")
                 transferencia = {
                     "id_funcionario": cpf,
                     "id_empresa": empresa_atual.id_empresa_setrab,
@@ -231,4 +238,5 @@ def transferencia(arquivo: str, data: date):
                 dados.append(transferencia)
         return dados
     except Exception as e:
+        logger.error(f"Erro na Função transferencia: {e}")
         raise e

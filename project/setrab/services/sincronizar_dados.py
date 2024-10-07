@@ -1,4 +1,5 @@
 import json
+import logging
 
 import pandas as pd
 import requests
@@ -6,6 +7,8 @@ from django.db import transaction
 
 from project.controle_uni.models import TsmyEuCargos, TsmyEuFuncao, TsmyEuSetor
 from project.setrab.models import SetrabCargoRel, SetrabFuncaoRel, SetrabSetorRel
+
+logger = logging.getLogger("sgg")
 
 
 def sincronizar_colaboradores():
@@ -25,6 +28,7 @@ def sincronizar_colaboradores():
         print(response.text)
         pass
     except Exception as e:
+        logger.warning(f"Erro ao sincronizar colaboradores: {e}")
         raise Exception("Erro ao sincronizar colaboradores: ", e)
 
 
@@ -32,9 +36,9 @@ def obter_objeto(modelo, **kwargs):
     try:
         return modelo.objects.get(**kwargs)
     except modelo.DoesNotExist:
-        print(f"{modelo.__name__} não encontrado")
+        logger.warning(f"{modelo.__name__} não encontrado")
     except modelo.MultipleObjectsReturned:
-        print(f"Mais de um {modelo.__name__} encontrado")
+        logger.warning(f"Mais de um {modelo.__name__} encontrado")
     return None
 
 
@@ -102,6 +106,7 @@ def processar_chunk(chunk, usuario):
                         defaults=user_data,
                     )
     except Exception as e:
+        logger.warning(f"Erro ao processar chunk: {e}")
         raise Exception("Erro ao processar chunk: ", e)
 
 
@@ -117,4 +122,5 @@ def atualizar_dados(arquivo, usuario):
                 chunk = df[start:end]
                 processar_chunk(chunk, usuario)
     except Exception as e:
+        logger.warning(f"Erro ao atualizar dados: {e}")
         raise Exception("Erro ao atualizar dados: ", e)
