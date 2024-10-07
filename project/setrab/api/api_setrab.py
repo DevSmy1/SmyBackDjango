@@ -42,6 +42,8 @@ from project.setrab.services.sincronizar_dados import atualizar_dados
 from project.setrab.services.sincronizar_sgg import (
     sincronizar_admissao_sgg,
     sincronizar_demissao_sgg,
+    sincronizar_mudanca_funcao_sgg,
+    sincronizar_transferencia_sgg,
 )
 
 logger = logging.getLogger("sgg")
@@ -107,7 +109,16 @@ def importar_arquivo_admissao(
 )
 def sincronizar_admissao(request, data: ConfirmarAdmissaoSchema):
     try:
-        sincronizar_admissao_sgg(data.dados)
+        erros = sincronizar_admissao_sgg(data.dados)
+        arquivo = {
+            "status": "Sinconizado",
+            "nome_arquivo": data.nome_arquivo,
+            "mes": meses_em_portugues[data.mes.month - 1],
+            "resposta_servidor": str(erros),
+        }
+        SetrabArquivoImportacao.objects.create(
+            **arquivo, usuario_criacao=request.auth, usuario_alteracao=request.auth
+        )
         return {"descricao": "Dados Sincronizados com sucesso"}
     except Exception as e:
         logger.error(f"Erro ao sincronizar: {e}")
@@ -186,8 +197,16 @@ def importar_arquivo_mudanca_funcao(
 )
 def sincronizar_mudanca_funcao(request, data: ConfirmarMudFuncaoSchema):
     try:
-        for dado in data:
-            print(dado)
+        erros = sincronizar_mudanca_funcao_sgg(data.dados)
+        arquivo = {
+            "status": "Sinconizado",
+            "nome_arquivo": data.nome_arquivo,
+            "mes": meses_em_portugues[data.mes.month - 1],
+            "resposta_servidor": str(erros),
+        }
+        SetrabArquivoImportacao.objects.create(
+            **arquivo, usuario_criacao=request.auth, usuario_alteracao=request.auth
+        )
         return {"descricao": "Dados Sincronizados com sucesso"}
     except Exception as e:
         logger.error(f"Erro ao sincronizar: {e}")
@@ -222,8 +241,16 @@ def importar_arquivo_transferencia(
 )
 def sincronizar_transferencia(request, data: ConfirmarTransferenciaSchema):
     try:
-        for dado in data:
-            print(dado)
+        erros = sincronizar_transferencia_sgg(data.dados)
+        arquivo = {
+            "status": "Sinconizado",
+            "nome_arquivo": data.nome_arquivo,
+            "mes": meses_em_portugues[data.mes.month - 1],
+            "resposta_servidor": str(erros),
+        }
+        SetrabArquivoImportacao.objects.create(
+            **arquivo, usuario_criacao=request.auth, usuario_alteracao=request.auth
+        )
         return {"descricao": "Dados Sincronizados com sucesso"}
     except Exception as e:
         logger.error(f"Erro ao sincronizar: {e}")

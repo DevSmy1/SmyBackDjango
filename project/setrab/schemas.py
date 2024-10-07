@@ -1,16 +1,15 @@
-from datetime import date
+from datetime import date, datetime
 from typing import List
-from ninja import Schema
+from ninja import Field, Schema
 
 
 class ImportacaoSchema(Schema):
-    id: int
     nome_arquivo: str
     mes: str
-    usuario: str
+    usuario_criacao: str = Field(alias="usuario_criacao.nome")
     status: str
     resposta_servidor: str
-    data_hora: str
+    data_criacao: datetime
 
 
 class BaseImportacaoSchema(Schema):
@@ -33,7 +32,7 @@ class AdmissaoSchema(BaseImportacaoSchema):
 class ConfirmarAdmissaoSchema(Schema):
     dados: List[AdmissaoSchema]
     nome_arquivo: str
-    mes: str
+    mes: date
 
 
 class DemissaoSchema(BaseImportacaoSchema):
@@ -43,7 +42,7 @@ class DemissaoSchema(BaseImportacaoSchema):
 class ConfirmarDemissaoSchema(Schema):
     dados: List[DemissaoSchema]
     nome_arquivo: str
-    mes: str
+    mes: date
 
 
 class MudFuncaoSchema(BaseImportacaoSchema):
@@ -55,7 +54,7 @@ class MudFuncaoSchema(BaseImportacaoSchema):
 class ConfirmarMudFuncaoSchema(Schema):
     dados: List[MudFuncaoSchema]
     nome_arquivo: str
-    mes: str
+    mes: date
 
 
 class TransferenciaSchema(BaseImportacaoSchema):
@@ -68,4 +67,4 @@ class TransferenciaSchema(BaseImportacaoSchema):
 class ConfirmarTransferenciaSchema(Schema):
     dados: List[TransferenciaSchema]
     nome_arquivo: str
-    mes: str
+    mes: date
