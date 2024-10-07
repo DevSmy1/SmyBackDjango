@@ -20,7 +20,23 @@ from project.controle_uni.models import (
     TsmyEuCargoEpiUnif,
     TsmyEuCargos,
 )
-from project.setrab.services.importacao import admissao, demissao, mudanca_funcao
+from project.setrab.schemas import (
+    AdmissaoSchema,
+    ConfirmarAdmissaoSchema,
+    ConfirmarDemissaoSchema,
+    ConfirmarMudFuncaoSchema,
+    ConfirmarTransferenciaSchema,
+    DemissaoSchema,
+    ImportacaoSchema,
+    MudFuncaoSchema,
+    TransferenciaSchema,
+)
+from project.setrab.services.importacao import (
+    admissao,
+    demissao,
+    mudanca_funcao,
+    transferencia,
+)
 from project.setrab.services.sincronizar_dados import atualizar_dados
 
 logger = logging.getLogger("agrupador")
@@ -34,20 +50,10 @@ ARQUIVO_MOD_FUNCAO = "MODFUNCAO.xls"
 ARQUIVO_TRANSFERENCIA = "TRANSFERENCIA.xls"
 
 
-class Importacao(Schema):
-    id: int
-    nome_arquivo: str
-    mes: str
-    usuario: str
-    status: str
-    resposta_servidor: str
-    data_hora: str
-
-
-@router.get("/", response=List[Importacao])
+@router.get("/", response=List[ImportacaoSchema])
 def get_importacoes(request):
     importacoes = [
-        Importacao(
+        ImportacaoSchema(
             id=1,
             nome_arquivo="arquivo1.csv",
             mes="Janeiro",
@@ -56,7 +62,7 @@ def get_importacoes(request):
             resposta_servidor="Sucesso",
             data_hora="2022-01-01 10:00:00",
         ),
-        Importacao(
+        ImportacaoSchema(
             id=2,
             nome_arquivo="arquivo2.csv",
             mes="Fevereiro",
@@ -65,7 +71,7 @@ def get_importacoes(request):
             resposta_servidor="Aguardando",
             data_hora="2022-02-01 14:30:00",
         ),
-        Importacao(
+        ImportacaoSchema(
             id=3,
             nome_arquivo="arquivo3.csv",
             mes="Março",
@@ -76,18 +82,6 @@ def get_importacoes(request):
         ),
     ]
     return importacoes
-
-
-class AdmissaoSchema(Schema):
-    id_empresa: int
-    id_funcionario: str
-    nome: str
-    data_admissao: date
-    data_nascimento: date
-    sexo: str
-    id_cargo: int
-    id_setor: int
-    possui_vinculo: str
 
 
 @router.post(
@@ -111,10 +105,19 @@ def importar_arquivo_admissao(
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
 
 
-class DemissaoSchema(Schema):
-    id_empresa: int
-    id_funcionario: str
-    data_demissao: date
+@router.post(
+    "/sincronizar/admissao/",
+    response={200: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
+    summary="Sincroniza os dados de admissão",
+)
+def sincronizar_admissao(request, dados: ConfirmarAdmissaoSchema):
+    try:
+        for dado in dados:
+            print(dado)
+        return {"descricao": "Dados Sincronizados com sucesso"}
+    except Exception as e:
+        logger.error(f"Erro ao sincronizar: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
 
 
 @router.post(
@@ -138,12 +141,19 @@ def importar_arquivo_demissao(
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
 
 
-class MudFuncaoSchema(Schema):
-    id_funcionario: str
-    id_empresa: int
-    id_cargo: int
-    id_setor: int
-    data_mud_func: date
+@router.post(
+    "/sincronizar/demissao/",
+    response={200: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
+    summary="Sincroniza os dados de demissão",
+)
+def sincronizar_demissao(request, dados: ConfirmarDemissaoSchema):
+    try:
+        for dado in dados:
+            print(dado)
+        return {"descricao": "Dados Sincronizados com sucesso"}
+    except Exception as e:
+        logger.error(f"Erro ao sincronizar: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
 
 
 @router.post(
@@ -167,19 +177,25 @@ def importar_arquivo_mudanca_funcao(
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
 
 
-class TransferenciaSchema(Schema):
-    id_funcionario: str
-    id_empresa: int
-    id_empresa_destino: int
-    id_cargo: int
-    id_setor: int
-    data_transferencia: date
+@router.post(
+    "/sincronizar/mudFuncao/",
+    response={200: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
+    summary="Sincroniza os dados de mudança de função",
+)
+def sincronizar_mudanca_funcao(request, dados: ConfirmarMudFuncaoSchema):
+    try:
+        for dado in dados:
+            print(dado)
+        return {"descricao": "Dados Sincronizados com sucesso"}
+    except Exception as e:
+        logger.error(f"Erro ao sincronizar: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
 
 
 @router.post(
     "/importar/transferencia/",
     response={200: List[TransferenciaSchema], 500: SchemaBase.RespostaErro},
-    summary="Peag os dados do arquivo de transferência",
+    summary="Pega os dados do arquivo de transferência",
 )
 def importar_arquivo_transferencia(
     request,
@@ -189,9 +205,24 @@ def importar_arquivo_transferencia(
     try:
         with open(ARQUIVO_TRANSFERENCIA, "wb") as f:
             f.write(arquivo_transferencia.read())
-        dados = mudanca_funcao(ARQUIVO_TRANSFERENCIA, data_filtro)
+        dados = transferencia(ARQUIVO_TRANSFERENCIA, data_filtro)
         os.remove(ARQUIVO_TRANSFERENCIA)
         return dados
+    except Exception as e:
+        logger.error(f"Erro ao sincronizar: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
+
+
+@router.post(
+    "/sincronizar/transferencia/",
+    response={200: SchemaBase.Sucesso, 500: SchemaBase.RespostaErro},
+    summary="Sincroniza os dados de transferência",
+)
+def sincronizar_transferencia(request, dados: ConfirmarTransferenciaSchema):
+    try:
+        for dado in dados:
+            print(dado)
+        return {"descricao": "Dados Sincronizados com sucesso"}
     except Exception as e:
         logger.error(f"Erro ao sincronizar: {e}")
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
