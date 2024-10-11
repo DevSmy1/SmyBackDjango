@@ -36,6 +36,7 @@ class SetrabArquivoImportacao(BaseModel):
     mes = models.CharField(max_length=50)
     status = models.CharField(max_length=50)
     resposta_servidor = models.CharField(max_length=100)
+    arquivo_erro = models.CharField(max_length=100, null=True)
 
     class Meta:
         db_table = "setrab_arquivo_importacao"

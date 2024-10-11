@@ -3,6 +3,7 @@ import logging
 import os
 from typing import List
 
+from django.http import FileResponse
 from ninja import File, Router, Schema, UploadedFile
 from ninja.pagination import paginate
 
@@ -75,7 +76,7 @@ meses_em_portugues = [
 @router.get("/importacoes", response=List[ImportacaoSchema])
 def get_importacoes(request):
     try:
-        return SetrabArquivoImportacao.objects.all()
+        return SetrabArquivoImportacao.objects.all().order_by("-data_criacao")
     except Exception as e:
         logger.error(f"Erro ao buscar importações: {e}")
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
@@ -109,12 +110,13 @@ def importar_arquivo_admissao(
 )
 def sincronizar_admissao(request, data: ConfirmarAdmissaoSchema):
     try:
-        erros = sincronizar_admissao_sgg(data.dados)
+        resposta, nome_arquivo = sincronizar_admissao_sgg(data.dados)
         arquivo = {
-            "status": "Sinconizado",
+            "status": "Sincronizado",
             "nome_arquivo": data.nome_arquivo,
             "mes": meses_em_portugues[data.mes.month - 1],
-            "resposta_servidor": str(erros),
+            "resposta_servidor": str(resposta),
+            "arquivo_erro": nome_arquivo,
         }
         SetrabArquivoImportacao.objects.create(
             **arquivo, usuario_criacao=request.auth, usuario_alteracao=request.auth
@@ -153,12 +155,13 @@ def importar_arquivo_demissao(
 )
 def sincronizar_demissao(request, data: ConfirmarDemissaoSchema):
     try:
-        erros = sincronizar_demissao_sgg(data.dados)
+        resposta, nome_arquivo = sincronizar_demissao_sgg(data.dados)
         arquivo = {
-            "status": "Sinconizado",
+            "status": "Sincronizado",
             "nome_arquivo": data.nome_arquivo,
             "mes": meses_em_portugues[data.mes.month - 1],
-            "resposta_servidor": str(erros),
+            "resposta_servidor": str(resposta),
+            "arquivo_erro": nome_arquivo,
         }
         SetrabArquivoImportacao.objects.create(
             **arquivo, usuario_criacao=request.auth, usuario_alteracao=request.auth
@@ -197,12 +200,13 @@ def importar_arquivo_mudanca_funcao(
 )
 def sincronizar_mudanca_funcao(request, data: ConfirmarMudFuncaoSchema):
     try:
-        erros = sincronizar_mudanca_funcao_sgg(data.dados)
+        resposta, nome_arquivo = sincronizar_mudanca_funcao_sgg(data.dados)
         arquivo = {
-            "status": "Sinconizado",
+            "status": "Sincronizado",
             "nome_arquivo": data.nome_arquivo,
             "mes": meses_em_portugues[data.mes.month - 1],
-            "resposta_servidor": str(erros),
+            "resposta_servidor": str(resposta),
+            "arquivo_erro": nome_arquivo,
         }
         SetrabArquivoImportacao.objects.create(
             **arquivo, usuario_criacao=request.auth, usuario_alteracao=request.auth
@@ -241,12 +245,13 @@ def importar_arquivo_transferencia(
 )
 def sincronizar_transferencia(request, data: ConfirmarTransferenciaSchema):
     try:
-        erros = sincronizar_transferencia_sgg(data.dados)
+        resposta, nome_arquivo = sincronizar_transferencia_sgg(data.dados)
         arquivo = {
-            "status": "Sinconizado",
+            "status": "Sincronizado",
             "nome_arquivo": data.nome_arquivo,
             "mes": meses_em_portugues[data.mes.month - 1],
-            "resposta_servidor": str(erros),
+            "resposta_servidor": str(resposta),
+            "arquivo_erro": nome_arquivo,
         }
         SetrabArquivoImportacao.objects.create(
             **arquivo, usuario_criacao=request.auth, usuario_alteracao=request.auth
@@ -274,4 +279,26 @@ def sincronizar_dados(
         return {"descricao": "Dados Sincronizados com sucesso"}
     except Exception as e:
         logger.error(f"Erro ao sincronizar: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
+
+
+@router.get(
+    "/errosTxt",
+    response={
+        200: SchemaBase.Sucesso,
+        404: SchemaBase.RespostaErro,
+        500: SchemaBase.RespostaErro,
+    },
+    summary="Mostrar os arquivos de erro",
+)
+def getErrosTxt(request, caminho=None):
+    try:
+        caminho_base = "./erro_sincronizacao/"
+        if os.path.exists(f"{caminho_base}{caminho}"):
+            return FileResponse(
+                open(f"{caminho_base}{caminho}", "rb"),
+                as_attachment=True,
+            )
+        return 404, {"erro": {"descricao": "Arquivo não encontrado"}}
+    except Exception as e:
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}

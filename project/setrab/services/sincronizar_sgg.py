@@ -63,9 +63,12 @@ def sincronizar_admissao_sgg(dados: List[AdmissaoSchema]):
             except Exception as e:
                 erros.append({"Funcionario": colab.nome, "Erro": str(e)})
         if erros:
-            gerar_erros(erros)
-            return f"Houveram {len(erros)} erros ao sincronizar os dados de admissão"
-        return None
+            nome_arquivo = gerar_erros(erros)
+            return (
+                f"Houveram {len(erros)} erros ao sincronizar os dados de admissão",
+                nome_arquivo,
+            )
+        return "Sincronização Sem Erros", None
     except Exception as e:
         logger.warning(f"Erro ao sincronizar admissão: {e}")
         raise e
@@ -94,9 +97,12 @@ def sincronizar_demissao_sgg(dados: List[DemissaoSchema]):
             except Exception as e:
                 erros.append({"Funcionario": colab.nome, "Erro": str(e)})
         if erros:
-            gerar_erros(erros)
-            return f"Houveram {len(erros)} erros ao sincronizar os dados de demissão"
-        return None
+            nome_arquivo = gerar_erros(erros)
+            return (
+                f"Houveram {len(erros)} erros ao sincronizar os dados de demissão",
+                nome_arquivo,
+            )
+        return "Sincronização Sem Erros", None
     except Exception as e:
         logger.warning(f"Erro ao sincronizar demissão: {e}")
         raise e
@@ -124,9 +130,12 @@ def sincronizar_mudanca_funcao_sgg(dados: List[MudFuncaoSchema]):
             except Exception as e:
                 erros.append({"Funcionario": colab.nome, "Erro": str(e)})
         if erros:
-            gerar_erros(erros)
-            return f"Houveram {len(erros)} erros ao sincronizar os dados de mudança de função"
-        return None
+            nome_arquivo = gerar_erros(erros)
+            return (
+                f"Houveram {len(erros)} erros ao sincronizar os dados de mudança de função",
+                nome_arquivo,
+            )
+        return "Sincronização Sem Erros", None
     except Exception as e:
         logger.warning(f"Erro ao sincronizar mudança de função: {e}")
         raise e
@@ -154,11 +163,12 @@ def sincronizar_transferencia_sgg(dados: List[TransferenciaSchema]):
             except Exception as e:
                 erros.append({"Funcionario": colab.nome, "Erro": str(e)})
         if erros:
-            gerar_erros(erros)
+            nome_arquivo = gerar_erros(erros)
             return (
-                f"Houveram {len(erros)} erros ao sincronizar os dados de transferência"
+                f"Houveram {len(erros)} erros ao sincronizar os dados de transferência",
+                nome_arquivo,
             )
-        return None
+        return "Sincronização Sem Erros", None
     except Exception as e:
         logger.warning(f"Erro ao sincronizar transferência: {e}")
         raise e
@@ -174,9 +184,8 @@ def gerar_erros(erros: List[str]):
         caminho_arquivo = os.path.join("./erro_sincronizacao", nome_arquivo)
 
         with open(caminho_arquivo, "w") as file:
-            for erro in erros:
-                file.write(f"{erro}\n")
+            file.write(json.dumps(erros, indent=4))
+        return nome_arquivo
     except Exception as e:
         logger.warning(f"Erro ao ler os erros: {e}")
         raise e
-    return None

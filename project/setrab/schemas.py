@@ -4,12 +4,14 @@ from ninja import Field, Schema
 
 
 class ImportacaoSchema(Schema):
+    id: int
     nome_arquivo: str
     mes: str
     usuario_criacao: str = Field(alias="usuario_criacao.nome")
     status: str
     resposta_servidor: str
     data_criacao: datetime
+    arquivo_erro: str
 
 
 class BaseImportacaoSchema(Schema):
