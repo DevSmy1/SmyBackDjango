@@ -31,9 +31,7 @@ SECRET_KEY = config("SECRET_KEY")
 AMBIENTE = config("AMBIENTE", default="DEV", cast=str)
 DEBUG = AMBIENTE != "PROD"
 
-# ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="*", cast=Csv())
-ALLOWED_HOSTS = ["localhost", "http://localhost:7048", "http://localhost:5500/"]
-
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="*", cast=Csv())
 
 # Application definition
 
@@ -100,7 +98,7 @@ if AMBIENTE == "DEV":
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
-if AMBIENTE == "HOMOLOG":
+if AMBIENTE != "DEV":
     oracledb.init_oracle_client()
     DATABASES = {
         "default": {
