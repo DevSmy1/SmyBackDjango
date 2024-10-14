@@ -99,6 +99,21 @@ class SchemaFichaOut(Schema):
     sit_produto: str
     recibo_uni: int | None = Field(None, alias="reciboUni_id")
     recibo_epi: int | None = Field(None, alias="reciboEpi_id")
+    quantidade: int
+
+
+class SchemaFichaUnitOut(Schema):
+    id_ficha: int
+    id_troca: int | None = None
+    seq_produto: int = Field(alias="seqproduto_id")
+    agrupador: int | None = Field(
+        None, alias="seqproduto.seqfamilia.mapfamatributo.valor"
+    )
+    quantidade: int
+    presencial: bool = False
+    id_observacao: int | None = Field(..., alias="id_observacao_id")
+    nro_ca: str | None = None
+    dt_validade: datetime | None = None
 
 
 class SchemaFichaIn(Schema):
@@ -106,7 +121,7 @@ class SchemaFichaIn(Schema):
     seqproduto: int
     matricula: int | None = None
     cpf: int | None = None
-    nro_ca: int | None = None
+    nro_ca: str | None = None
     dt_validade: date | None = None
     id_observacao: int | None = None
     sit_produto: str

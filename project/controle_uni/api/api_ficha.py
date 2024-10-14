@@ -14,7 +14,11 @@ from project.controle_uni.models import (
     TsmyEuColaboradores,
     TsmyEuFichaColab,
 )
-from project.controle_uni.schemas import SchemaFichaOut, SchemaVerificarQuantidade
+from project.controle_uni.schemas import (
+    SchemaFichaOut,
+    SchemaFichaUnitOut,
+    SchemaVerificarQuantidade,
+)
 from project.controle_uni.services.dados_epi import verificarNroCa
 import project.schemas as SchemaBase
 
@@ -46,7 +50,26 @@ def buscar_fichas(request, matricula: int, tipo_ficha: str):
         if tipo_ficha == "OR":
             tipos = ["OR"]
         return TsmyEuFichaColab.objects.filter(
-            matricula__matricula=matricula, sit_produto__in=tipos
+            matricula__matricula=matricula, sit_produto__in=tipos, sit_ficha="A"
+        )
+    except Exception as e:
+        logger.error(f"Erro ao buscar fichas de cadastro: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
+
+
+@router.get(
+    "/desativadas/",
+    response={
+        200: List[SchemaFichaOut],
+        404: SchemaBase.RespostaErro,
+        500: SchemaBase.RespostaErro,
+    },
+    summary="Retorna todas as fichas de cadastro",
+)
+def buscar_fichas_desativadas(request, matricula: int, tipo_ficha: str):
+    try:
+        return TsmyEuFichaColab.objects.filter(
+            matricula__matricula=matricula, sit_ficha="A"
         )
     except Exception as e:
         logger.error(f"Erro ao buscar fichas de cadastro: {e}")
@@ -55,7 +78,7 @@ def buscar_fichas(request, matricula: int, tipo_ficha: str):
 
 @router.get(
     "/{id_ficha}",
-    response={200: SchemaFichaOut, 404: SchemaBase.RespostaErro},
+    response={200: SchemaFichaUnitOut, 404: SchemaBase.RespostaErro},
     summary="Retorna uma ficha de cadastro específica",
 )
 def buscar_ficha(request, id_ficha: int):
