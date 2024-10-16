@@ -1,8 +1,6 @@
 from ninja import Field, Schema
 from datetime import date, datetime
 
-from project.controle_uni.models import TsmyEuCargoAgrup
-
 
 # Cargo
 class SchemaCargo(Schema):

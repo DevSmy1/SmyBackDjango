@@ -1,13 +1,10 @@
 import datetime
 import logging
-import os
 from typing import List
 
 from django.db import connection
-from ninja import File, Router, Schema, UploadedFile
+from ninja import Router
 
-from project.c5.models import MapProduto
-from project.controle_uni.services.cargo import carregar_arquivo_cargo
 from project.controle_uni.models import (
     TsmyEuCa,
     TsmyEuCargoEpiUnif,
@@ -66,10 +63,10 @@ def buscar_fichas(request, matricula: int, tipo_ficha: str):
     },
     summary="Retorna todas as fichas de cadastro",
 )
-def buscar_fichas_desativadas(request, matricula: int, tipo_ficha: str):
+def buscar_fichas_desativadas(request, matricula: int):
     try:
         return TsmyEuFichaColab.objects.filter(
-            matricula__matricula=matricula, sit_ficha="A"
+            matricula__matricula=matricula, sit_ficha="D"
         )
     except Exception as e:
         logger.error(f"Erro ao buscar fichas de cadastro: {e}")

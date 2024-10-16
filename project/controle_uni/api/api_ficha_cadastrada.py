@@ -1,26 +1,14 @@
-import datetime
 import logging
-import os
-from typing import List
 
-from django.db import connection
-from ninja import File, Router, Schema, UploadedFile
+from ninja import Router
 
-from project.c5.models import MapProduto
-from project.controle_uni.services.cargo import carregar_arquivo_cargo
 from project.controle_uni.models import (
-    TsmyEuCa,
-    TsmyEuCargoEpiUnif,
-    TsmyEuColaboradores,
     TsmyEuFichaColab,
 )
 from project.controle_uni.schemas import (
     SchemaAlterarFicha,
     SchemaFichaIn,
-    SchemaFichaOut,
-    SchemaVerificarQuantidade,
 )
-from project.controle_uni.services.dados_epi import verificarNroCa
 from project.controle_uni.services.ficha import (
     alterar_ficha,
     criar_ficha,
