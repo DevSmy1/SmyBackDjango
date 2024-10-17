@@ -15,7 +15,7 @@ from icecream import ic  # noqa: F401
 logger = logging.getLogger("termo")
 
 
-def dadosFichaUni(ids_fichas: List[int]) -> List[List]:
+def dados_ficha_uni(ids_fichas: List[int]) -> List[List]:
     try:
         fichas = TsmyEuFichaColab.objects.filter(id_ficha__in=ids_fichas).values(
             "seqproduto", "custoAtual"

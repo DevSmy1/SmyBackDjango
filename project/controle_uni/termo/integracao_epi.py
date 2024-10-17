@@ -1,16 +1,15 @@
 import os
-from project.controle_uni.termo.functionsPdf import mm2pt, pt2mm
-from reportlab.lib import colors
+from project.controle_uni.termo.functionsPdf import mm2pt
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfgen import canvas
-from reportlab.platypus import Paragraph, Table, TableStyle
+from reportlab.platypus import Paragraph
 import logging
 
 logger = logging.getLogger("termo")
 
 
-def criaNomeArquivoEpi(matricula):
+def criar_nome_arquivo_epi(matricula):
     try:
         # verifica se já existe um arquivo com esse nome
         if os.path.exists(f"./ReciboEpi/{matricula}Integracao.pdf"):
@@ -26,10 +25,10 @@ def criaNomeArquivoEpi(matricula):
         return False
 
 
-def criaIntegracaoEpi(dadosColab: dict):
+def cria_integracao_epi(dadosColab: dict):
     try:
-        filePath = criaNomeArquivoEpi(dadosColab["matricula"])
-        pdf = canvas.Canvas(filePath, pagesize=landscape(A4))
+        filePath = criar_nome_arquivo_epi(dadosColab["matricula"])
+        pdf = canvas.Canvas(filePath, pagesize=landscape(A4))  # type: ignore
         styles = getSampleStyleSheet()
         # Mudando fonte
         styles["Normal"].fontName = "Helvetica"
@@ -40,17 +39,17 @@ def criaIntegracaoEpi(dadosColab: dict):
         pdf.rect(mm2pt(5), mm2pt(5), mm2pt(287), mm2pt(200))
 
         # Header
-        addHeader(pdf)
+        add_header(pdf)
 
         # Dados Colab
-        addLinhasDadosColab(pdf)
-        addDadosColab(dadosColab, pdf)
+        add_linhas_dados_colab(pdf)
+        add_dados_colab(dadosColab, pdf)
 
         # Termo
         pdf.setFont("Helvetica", 12)
-        addTermo(dadosColab, pdf, styles)
+        add_termo(dadosColab, pdf, styles)
 
-        addAssinatura(pdf)
+        add_assinatura(pdf)
 
         pdf.save()
         return filePath
@@ -59,7 +58,7 @@ def criaIntegracaoEpi(dadosColab: dict):
         return None
 
 
-def addLinhasDadosColab(pdf):
+def add_linhas_dados_colab(pdf):
     pdf.rect(mm2pt(5), mm2pt(165), mm2pt(287), mm2pt(10))
 
     pdf.rect(mm2pt(5), mm2pt(165), mm2pt(80), mm2pt(10))
@@ -68,7 +67,7 @@ def addLinhasDadosColab(pdf):
     pdf.rect(mm2pt(5), mm2pt(165), mm2pt(240), mm2pt(10))
 
 
-def addDadosColab(dadosColab, pdf):
+def add_dados_colab(dadosColab, pdf):
     pdf.setFont("Helvetica-Bold", 12)
     pdf.drawString(mm2pt(6), mm2pt(166), "Nome: ")
     pdf.drawString(mm2pt(86), mm2pt(166), "Função: ")
@@ -83,7 +82,7 @@ def addDadosColab(dadosColab, pdf):
     pdf.drawString(mm2pt(206), mm2pt(166), getNomeLoja(int(dadosColab["nroempresa"])))
 
 
-def addHeader(pdf):
+def add_header(pdf):
     pdf.rect(mm2pt(5), mm2pt(175), mm2pt(287), mm2pt(30))
     pdf.drawImage("logo.png", mm2pt(5), mm2pt(175), width=mm2pt(40), height=mm2pt(30))
 
@@ -110,7 +109,7 @@ def addHeader(pdf):
     )
 
 
-def addTermo(dadosColab, pdf, styles):
+def add_termo(dadosColab, pdf, styles):
     primeiro = Paragraph(
         f"""Eu  {dadosColab["nome"]}  , CPF  {dadosColab["cpf"]}  conforme preceitua a Lei nº 6.514 de 22 de dezembro de 1977 e a Portaria 3214 de 08 de junho de 1978 - Norma Regulamentadora  01 item 1.7 e 18, item 18.28,1, declaro ter recebido da Empresa Sociedade Hípica Paulista. antes de iniciar minhas atividades, todos os treinamentos necessários para executá-la de forma segura. O treinamento teve a carga horária de 02 (duas) horas.""",
         styles["Normal"],
@@ -157,7 +156,7 @@ def addTermo(dadosColab, pdf, styles):
     pdf.drawText(textObjetc)
 
 
-def addAssinatura(pdf):
+def add_assinatura(pdf):
     pdf.setFont("Helvetica-Bold", 12)
     pdf.drawString(mm2pt(40), mm2pt(10), "Assinatura do(a) funcionário(a): ")
     pdf.drawString(

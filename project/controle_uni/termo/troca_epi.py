@@ -1,7 +1,8 @@
 import os
+from typing import List
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, landscape
-from project.controle_uni.termo.functionsPdf import mm2pt, pt2mm
+from project.controle_uni.termo.functionsPdf import mm2pt
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph, Table, TableStyle
@@ -11,7 +12,7 @@ import logging
 logger = logging.getLogger("termo")
 
 
-def criaNomeArquivoEpi(matricula):
+def criar_nome_arquivo_epi(matricula):
     try:
         # verifica se já existe um arquivo com esse nome
         if os.path.exists(f"./ReciboEpi/{matricula}EntregaEpi.pdf"):
@@ -27,19 +28,19 @@ def criaNomeArquivoEpi(matricula):
         return False
 
 
-def criarTrocaEpi(dadosColab: dict, dados: list):
+def criar_troca_epi(dadosColab: dict, dados: List[str]):
     try:
-        filePath = criaNomeArquivoEpi(dadosColab["matricula"])
-        pdf = canvas.Canvas(filePath, pagesize=landscape(A4))
+        filePath = criar_nome_arquivo_epi(dadosColab["matricula"])
+        pdf = canvas.Canvas(filePath, pagesize=landscape(A4))  # type: ignore
 
         # Header do PDF
-        addHeader(pdf)
+        add_header(pdf)
 
         # Dados do Colaborador
-        addTituloDados(pdf)
+        add_titulo_dados(pdf)
 
         #  Dados do funcionario
-        addDadosColab(dadosColab, pdf)
+        add_dados_colab(dadosColab, pdf)
 
         # Criando estilo
         styles = getSampleStyleSheet()
@@ -48,14 +49,14 @@ def criarTrocaEpi(dadosColab: dict, dados: list):
         # Mudando tamanho da fonte
         styles["Normal"].fontSize = 11
 
-        addTermo(pdf, styles)
+        add_termo(pdf, styles)
 
         while len(dados) < 12:
-            dados.append(["", "", "", "", ""])
+            dados.append(["", "", "", "", ""])  # type: ignore
 
-        addTabela(dados, pdf)
+        add_tabela(dados, pdf)
 
-        addLegenda(pdf, styles)
+        add_legenda(pdf, styles)
 
         pdf.save()
         return filePath
@@ -64,7 +65,7 @@ def criarTrocaEpi(dadosColab: dict, dados: list):
         return None
 
 
-def addTabela(dados, pdf):
+def add_tabela(dados, pdf):
     table = Table(
         dados,
         colWidths=[mm2pt(20), mm2pt(20), mm2pt(120), mm2pt(30), mm2pt(50), mm2pt(40)],
@@ -92,7 +93,7 @@ def addTabela(dados, pdf):
     table.drawOn(pdf, mm2pt(10), mm2pt(70 - (len(dados) * 5)))
 
 
-def addLegenda(pdf, styles):
+def add_legenda(pdf, styles):
     styles["Normal"].fontSize = 12
     styles["Normal"].fontName = "Helvetica-Bold"
     legenda = Paragraph(
@@ -105,7 +106,7 @@ def addLegenda(pdf, styles):
     return legenda
 
 
-def addDadosColab(dadosColab, pdf):
+def add_dados_colab(dadosColab, pdf):
     pdf.setFont("Helvetica-Bold", 13)
     # Titulo
     pdf.drawString(mm2pt(20), mm2pt(160), "Nome: ")
@@ -122,7 +123,7 @@ def addDadosColab(dadosColab, pdf):
     pdf.drawString(mm2pt(20), mm2pt(150), "Declaro que:")
 
 
-def addTituloDados(pdf):
+def add_titulo_dados(pdf):
     pdf.rect(mm2pt(10), mm2pt(80), mm2pt(280), mm2pt(100))
 
     pdf.setFont("Helvetica-Bold", 22)
@@ -136,7 +137,7 @@ def addTituloDados(pdf):
     )
 
 
-def addTermo(pdf, styles):
+def add_termo(pdf, styles):
     primeiro = Paragraph(
         """1 - Recebi do Supermercados Yamauchi LTDA, os equipamentos de proteção individual – EPI, abaixo relacionados, nas datas ali registradas, o qual, desde já, comprometo-me a usá-los na execução de minhas tarefas e atividades, zelando pela sua perfeita guarda, conservação, uso e funcionamento, assumindo também o compromisso de os devolver quando solicitados ou por ocasião de rescisão de contrato de trabalho; """,
         styles["Normal"],
@@ -184,7 +185,7 @@ def addTermo(pdf, styles):
     )
 
 
-def addHeader(pdf):
+def add_header(pdf):
     pdf.drawImage("logo.png", mm2pt(10), mm2pt(180), mm2pt(32), mm2pt(30))
     pdf.setFont("Helvetica-Bold", 30)
     pdf.drawAlignedString(mm2pt(210), mm2pt(190), "Recibo de Entrega de EPI")
