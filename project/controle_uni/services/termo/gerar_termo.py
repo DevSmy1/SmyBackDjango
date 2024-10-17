@@ -1,26 +1,22 @@
 import datetime
 import logging
 from typing import List
-from django.db.models import Min, Sum
-from project.c5.models import MapProduto
 from project.controle_uni.models import (
+    TsmyEuArquivo,
     TsmyEuColaboradores,
-    TsmyEuFichaColab,
     TsmyEuLancto,
-    TsmyEuParametro,
 )
-from project.controle_uni.schemas import SchemaAlterarFicha, SchemaFichaIn
 from project.controle_uni.services.ficha import pegar_percentual_atual
 from project.controle_uni.services.termo.termo_epi import (
     dados_ficha_epi,
     transformar_lista_para_troca_epi,
 )
 from project.controle_uni.services.termo.termo_uni import dados_ficha_uni
+from project.controle_uni.termo.fichaDeControleEpi import criarFichaDeControle
 from project.controle_uni.termo.integracao_epi import cria_integracao_epi
-from project.controle_uni.termo.reciboEntregaUni import criarTermoUni
+from project.controle_uni.termo.reciboEntregaUni import criar_termo_uni
 from project.controle_uni.termo.troca_epi import criar_troca_epi
 from project.intranet.models import SmyUsuario
-from icecream import ic
 
 logger = logging.getLogger("termo")
 
@@ -129,6 +125,24 @@ def status_colab_arquivo(matricula: int):
         return None
 
 
+def criar_registro_arquivo_integracao(
+    dadosColab: dict, reciboEpi: str, usuario: SmyUsuario
+):
+    try:
+        colab = TsmyEuColaboradores.objects.get(matricula=dadosColab["matricula"])
+        TsmyEuArquivo.objects.create(
+            nome_arquivo=reciboEpi,
+            matricula=colab,
+            tipo_arquivo="IE",
+            usuario_criacao=usuario,
+            usuario_alteracao=usuario,
+        )
+        return True
+    except Exception as e:
+        logger.error(e)
+        return False
+
+
 def gerar_termo_uni(matricula: int, ids_fichas: List[int]):
     try:
         fichas = dados_ficha_uni(ids_fichas)
@@ -155,14 +169,14 @@ def gerar_termo_uni(matricula: int, ids_fichas: List[int]):
             "cpf": str(colab.cpf),
             "dataAtual": dataAtual,
         }
-        reciboUni = criarTermoUni(data, fichas, percentual)
+        reciboUni = criar_termo_uni(data, fichas, percentual)
         return reciboUni
     except Exception as e:
         logger.error(f"Erro criar Recibo: {e}")
         raise Exception("Erro ao carregar dados da ficha recibo uniforme: ", e)
 
 
-def gerar_termo_epi(matricula: int, ids_fichas):
+def gerar_termo_epi(matricula: int, ids_fichas, usuario: SmyUsuario):
     try:
         fichas = dados_ficha_epi(ids_fichas)
         if not fichas:
@@ -186,12 +200,17 @@ def gerar_termo_epi(matricula: int, ids_fichas):
             "dataAtual": datetime.date.today().strftime("%d/%m/%Y"),
         }
         if status_colab_arquivo(matricula) == "integração":
-            arquivo_integracao = cria_integracao_epi(data)
+            arquivo_integracao: str = cria_integracao_epi(data)  # type: ignore
+            criar_registro_arquivo_integracao(data, arquivo_integracao, usuario)
+            if not arquivo_integracao:
+                logger.error("Erro ao criar arquivo de integração")
+                return None
+            recibo_epi = criarFichaDeControle(data, fichas, arquivo_integracao)  # type: ignore
             print("Integração")
         elif status_colab_arquivo(matricula) == "troca":
             fichas = transformar_lista_para_troca_epi(fichas)
-            reciboEpi = criar_troca_epi(data, fichas)  # type: ignore
-        return reciboEpi
+            recibo_epi = criar_troca_epi(data, fichas)  # type: ignore
+        return recibo_epi
     except Exception as e:
         logger.error(f"Erro criar Recibo: {e}")
         raise Exception("Erro ao carregar dados da ficha recibo EPI: ", e)

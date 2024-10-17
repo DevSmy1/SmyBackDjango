@@ -1,16 +1,10 @@
 import logging
 from typing import List
 from django.db.models import Min, Sum
-from project.c5.models import MapProduto
 from project.controle_uni.models import (
-    TsmyEuColaboradores,
     TsmyEuFichaColab,
-    TsmyEuLancto,
 )
-from project.controle_uni.schemas import SchemaAlterarFicha, SchemaFichaIn
 from project.controle_uni.termo.functionsPdf import formatarDinheiro
-from project.intranet.models import SmyUsuario
-from icecream import ic  # noqa: F401
 
 logger = logging.getLogger("termo")
 

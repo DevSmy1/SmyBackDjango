@@ -32,7 +32,7 @@ def criar_recibo(
 ):
     try:
         # ic(gerarTermoUni(matricula, ids_fichas))
-        gerar_termo_epi(matricula, ids_fichas)
+        gerar_termo_epi(matricula, ids_fichas, request.auth)
         return 200, {
             "descricao": f"Recibo para as fichas {ids_fichas.__str__()}",
         }
