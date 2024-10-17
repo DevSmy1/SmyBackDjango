@@ -3,7 +3,10 @@ from typing import List
 
 from ninja import Router
 
-from project.controle_uni.services.termo.gerar_termo import gerarTermoUni
+from project.controle_uni.services.termo.gerar_termo import (
+    gerar_termo_epi,
+    gerar_termo_uni,
+)
 import project.schemas as SchemaBase
 from icecream import ic
 
@@ -28,7 +31,8 @@ def criar_recibo(
     ids_fichas: List[int],
 ):
     try:
-        ic(gerarTermoUni(matricula, ids_fichas))
+        # ic(gerarTermoUni(matricula, ids_fichas))
+        gerar_termo_epi(matricula, ids_fichas)
         return 200, {
             "descricao": f"Recibo para as fichas {ids_fichas.__str__()}",
         }

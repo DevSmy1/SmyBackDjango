@@ -16,7 +16,10 @@ from project.controle_uni.schemas import (
     SchemaFichaUnitOut,
     SchemaVerificarQuantidade,
 )
-from project.controle_uni.services.dados_epi import verificarNroCa
+from project.controle_uni.services.dados_epi import (
+    verificar_produto_epi,
+    verificarNroCa,
+)
 import project.schemas as SchemaBase
 
 logger = logging.getLogger("ficha")
@@ -168,15 +171,9 @@ def validar_ca(request, nro_ca: int):
     },
     tags=["Produtos"],
 )
-def verificar_produto_epi(request, seq_produto: int):
+def verificar_produto_epi_request(request, seq_produto: int):
     try:
-        with connection.cursor() as cursor:
-            result = cursor.execute(
-                f"select smy_fbusca_categ_nivel({seq_produto},2) from dual"
-            )
-            result = result.fetchall()  # type: ignore
-            if "EPI" in result[0][0]:
-                return {"descricao": "True"}
-        return {"descricao": "False"}
+        epi = verificar_produto_epi(seq_produto)
+        return {"descricao": f"{epi}"}
     except Exception as e:
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
