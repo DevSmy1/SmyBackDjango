@@ -69,7 +69,13 @@ def criarPerdaUni(data: dict, fichas: list):
     # Inicio do documento
     pdf.rect(mm2pt(10), mm2pt(255), mm2pt(50), mm2pt(30))
     # Adicionar uma imagem ao bloco acima
-    pdf.drawImage("logo.png", mm2pt(19), mm2pt(256), mm2pt(30), mm2pt(28))
+    pdf.drawImage(
+        "./project/controle_uni/termo/logo.png",
+        mm2pt(19),
+        mm2pt(256),
+        mm2pt(30),
+        mm2pt(28),
+    )
 
     pdf.setFont("Helvetica-Bold", 16)
     pdf.rect(mm2pt(60), mm2pt(255), mm2pt(140), mm2pt(30))
@@ -102,10 +108,10 @@ def criarPerdaUni(data: dict, fichas: list):
     pdf.drawString(mm2pt(20), mm2pt(235), "Cargo: ")
     # Texto
     pdf.setFont("Helvetica", 11)
-    pdf.drawString(mm2pt(40), mm2pt(245), data.get("nome").title())
-    pdf.drawString(mm2pt(160), mm2pt(245), data.get("matricula"))
-    pdf.drawString(mm2pt(160), mm2pt(235), data.get("nroempresa"))
-    pdf.drawString(mm2pt(40), mm2pt(235), data.get("cargo"))
+    pdf.drawString(mm2pt(40), mm2pt(245), data.get("nome").title())  # type: ignore
+    pdf.drawString(mm2pt(160), mm2pt(245), data.get("matricula"))  # type: ignore
+    pdf.drawString(mm2pt(160), mm2pt(235), data.get("nroempresa"))  # type: ignore
+    pdf.drawString(mm2pt(40), mm2pt(235), data.get("cargo"))  # type: ignore
 
     # Create a Table object with the data
     table = Table(
@@ -181,15 +187,15 @@ def criarPerdaUni(data: dict, fichas: list):
     # Assinatura
 
     # Define the name
-    nome = f"{data.get('nome').title()}"
+    nome = f"{data.get('nome').title()}"  # type: ignore
     linha = "_" * 70
     cpf = f"CPF: {data.get('cpf')}"
-    data = f"Data: {data.get('dataAtual')}"
+    data = f"Data: {data.get('dataAtual')}"  # type: ignore
 
     tamanhoLinha = pdf.stringWidth(linha, "Helvetica-Bold", 12)
     tamanhoNome = pdf.stringWidth(nome, "Helvetica-Bold", 12)
     tamanhoCpf = pdf.stringWidth(cpf, "Helvetica-Bold", 12)
-    tamanhoData = pdf.stringWidth(data, "Helvetica-Bold", 12)
+    tamanhoData = pdf.stringWidth(data, "Helvetica-Bold", 12)  # type: ignore
 
     pdf.drawString(mm2pt(23), mm2pt(25), linha)
     pdf.drawString(
@@ -203,7 +209,9 @@ def criarPerdaUni(data: dict, fichas: list):
 
     # Data
     pdf.drawString(
-        mm2pt(23 + ((pt2mm(tamanhoLinha) - pt2mm(tamanhoData)) / 2)), mm2pt(10), data
+        mm2pt(23 + ((pt2mm(tamanhoLinha) - pt2mm(tamanhoData)) / 2)),
+        mm2pt(10),
+        data,  # type: ignore
     )
 
     pdf.save()

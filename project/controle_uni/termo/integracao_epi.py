@@ -11,6 +11,8 @@ logger = logging.getLogger("termo")
 
 def criar_nome_arquivo_epi(matricula):
     try:
+        if not os.path.exists("./ReciboEpi"):
+            os.makedirs("./ReciboEpi")
         # verifica se já existe um arquivo com esse nome
         if os.path.exists(f"./ReciboEpi/{matricula}Integracao.pdf"):
             # se existir, criar um novo nome
@@ -54,7 +56,7 @@ def cria_integracao_epi(dadosColab: dict):
         pdf.save()
         return filePath
     except Exception as erro:
-        print(f"Erro: {erro}")
+        logger.error(f"Erro ao criar termo de integração: {erro}")
         return None
 
 
@@ -79,12 +81,18 @@ def add_dados_colab(dadosColab, pdf):
     pdf.drawString(mm2pt(20), mm2pt(166), dadosColab["nome"])
     pdf.drawString(mm2pt(102), mm2pt(166), dadosColab["cargo"])
     pdf.drawString(mm2pt(157), mm2pt(166), dadosColab["setor"])
-    pdf.drawString(mm2pt(206), mm2pt(166), getNomeLoja(int(dadosColab["nroempresa"])))
+    pdf.drawString(mm2pt(206), mm2pt(166), nome_loja(int(dadosColab["nroempresa"])))
 
 
 def add_header(pdf):
     pdf.rect(mm2pt(5), mm2pt(175), mm2pt(287), mm2pt(30))
-    pdf.drawImage("logo.png", mm2pt(5), mm2pt(175), width=mm2pt(40), height=mm2pt(30))
+    pdf.drawImage(
+        "./project/controle_uni/termo/logo.png",
+        mm2pt(5),
+        mm2pt(175),
+        width=mm2pt(40),
+        height=mm2pt(30),
+    )
 
     pdf.rect(mm2pt(5), mm2pt(175), mm2pt(40), mm2pt(30))
     pdf.setFont("Helvetica-Bold", 19)
@@ -97,11 +105,11 @@ def add_header(pdf):
     pdf.drawString(mm2pt(160), mm2pt(199), "Elaborado: ")
     pdf.drawString(mm2pt(160), mm2pt(192), "Leonardo Camacho")
     pdf.drawString(mm2pt(160), mm2pt(185), "Revisao: ")
-    pdf.drawString(mm2pt(160), mm2pt(179), f"{getDataAtual()} ")
+    pdf.drawString(mm2pt(160), mm2pt(179), f"{data_atual()} ")
 
     pdf.rect(mm2pt(157), mm2pt(175), mm2pt(50), mm2pt(30))
     pdf.rect(mm2pt(247), mm2pt(175), mm2pt(45), mm2pt(30))
-    pdf.drawString(mm2pt(215), mm2pt(195), f"Ano: {getDataAtual()[6:]}")
+    pdf.drawString(mm2pt(215), mm2pt(195), f"Ano: {data_atual()[6:]}")
     pdf.drawString(mm2pt(215), mm2pt(180), "Pagina: 1/1")
 
     pdf.drawImage(
@@ -170,10 +178,10 @@ def add_assinatura(pdf):
         mm2pt(15),
         "_______________________________________________",
     )
-    pdf.drawString(mm2pt(130), mm2pt(7), f"São Paulo, {getDataAtual()}")
+    pdf.drawString(mm2pt(130), mm2pt(7), f"São Paulo, {data_atual()}")
 
 
-def getNomeLoja(numLoja):
+def nome_loja(numLoja):
     lojas = {
         1: "Matriz",
         2: "Isabel Dias",
@@ -186,7 +194,7 @@ def getNomeLoja(numLoja):
     return lojas[numLoja]
 
 
-def getDataAtual():
+def data_atual():
     from datetime import datetime
 
     data = datetime.now()

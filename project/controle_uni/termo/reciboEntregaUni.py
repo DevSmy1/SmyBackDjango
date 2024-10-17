@@ -34,7 +34,7 @@ def formatarDinheiro(valor):
     return valor
 
 
-def criaNomeArquivoUni(matricula):
+def criar_nome_arquivo_uni(matricula):
     try:
         # verifica se já existe um arquivo com esse nome
         if not os.path.exists("./ReciboEntregaUni"):
@@ -52,9 +52,9 @@ def criaNomeArquivoUni(matricula):
         return False
 
 
-def criarTermoUni(data: dict, fichas: list, percentual: list):
+def criar_termo_uni(data: dict, fichas: list, percentual: list):
     try:
-        filePath = criaNomeArquivoUni(data.get("matricula"))
+        filePath = criar_nome_arquivo_uni(data.get("matricula"))
         pdf = canvas.Canvas(f"{filePath}", pagesize=A4)
 
         # Inicio do documento

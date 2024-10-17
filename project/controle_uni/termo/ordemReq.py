@@ -59,7 +59,13 @@ def criarOrdemReq(data: dict, fichas: list):
         # Inicio do documento
         pdf.rect(mm2pt(10), mm2pt(255), mm2pt(50), mm2pt(30))
         # Adicionar uma imagem ao bloco acima
-        pdf.drawImage("logo.png", mm2pt(19), mm2pt(256), mm2pt(30), mm2pt(28))
+        pdf.drawImage(
+            "./project/controle_uni/termo/logo.png",
+            mm2pt(19),
+            mm2pt(256),
+            mm2pt(30),
+            mm2pt(28),
+        )
 
         pdf.setFont("Helvetica-Bold", 16)
         pdf.rect(mm2pt(60), mm2pt(255), mm2pt(140), mm2pt(30))

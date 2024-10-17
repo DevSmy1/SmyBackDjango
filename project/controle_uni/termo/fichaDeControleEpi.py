@@ -43,7 +43,13 @@ def criarFichaDeControle(dadosColab: dict, dados: list):
 
         # Logo da empresa
         pdf.rect(mm2pt(10), mm2pt(180), mm2pt(50), mm2pt(22))
-        pdf.drawImage("logo.png", mm2pt(22), mm2pt(181), mm2pt(22), mm2pt(20))
+        pdf.drawImage(
+            "./project/controle_uni/termo/logo.png",
+            mm2pt(22),
+            mm2pt(181),
+            mm2pt(22),
+            mm2pt(20),
+        )
 
         # Box do título
         styles["Normal"].fontSize = 16

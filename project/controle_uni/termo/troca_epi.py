@@ -14,6 +14,8 @@ logger = logging.getLogger("termo")
 
 def criar_nome_arquivo_epi(matricula):
     try:
+        if not os.path.exists("./ReciboEpi"):
+            os.makedirs("./ReciboEpi")
         # verifica se já existe um arquivo com esse nome
         if os.path.exists(f"./ReciboEpi/{matricula}EntregaEpi.pdf"):
             # se existir, criar um novo nome
@@ -186,6 +188,12 @@ def add_termo(pdf, styles):
 
 
 def add_header(pdf):
-    pdf.drawImage("logo.png", mm2pt(10), mm2pt(180), mm2pt(32), mm2pt(30))
+    pdf.drawImage(
+        "./project/controle_uni/termo/logo.png",
+        mm2pt(10),
+        mm2pt(180),
+        mm2pt(32),
+        mm2pt(30),
+    )
     pdf.setFont("Helvetica-Bold", 30)
     pdf.drawAlignedString(mm2pt(210), mm2pt(190), "Recibo de Entrega de EPI")
