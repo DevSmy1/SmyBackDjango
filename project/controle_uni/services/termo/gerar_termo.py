@@ -11,15 +11,21 @@ from project.controle_uni.models import (
 )
 from project.controle_uni.schemas import SchemaAlterarFicha, SchemaFichaIn
 from project.controle_uni.services.ficha import pegar_percentual_atual
-from project.controle_uni.services.termo.termoUni import dadosFichaUni
+from project.controle_uni.services.termo.termo_epi import (
+    dados_ficha_epi,
+    transformar_lista_para_troca_epi,
+)
+from project.controle_uni.services.termo.termo_uni import dados_ficha_uni
+from project.controle_uni.termo.integracao_epi import cria_integracao_epi
 from project.controle_uni.termo.reciboEntregaUni import criarTermoUni
+from project.controle_uni.termo.troca_epi import criar_troca_epi
 from project.intranet.models import SmyUsuario
 from icecream import ic
 
 logger = logging.getLogger("termo")
 
 
-def formatarDinheiro(valor):
+def formatar_dinheiro(valor):
     """Pega um valo int ou float e transforma em uma string formatada como dinheiro (R$ 0.000,00)
 
     Args:
@@ -49,7 +55,7 @@ def formatarDinheiro(valor):
         return False
 
 
-def converterDinheiroParaFloat(valor):
+def converter_dinheiro_para_float(valor):
     """Pega um valor formatado como dinheiro (R$ 0.000,00) e transforma em float
 
     Args:
@@ -69,7 +75,7 @@ def converterDinheiroParaFloat(valor):
         return False
 
 
-def pegarCustoTotal(fichas: list):
+def pegar_custo_total(fichas: list):
     """Pega o custo total dos Produtos
 
     Args:
@@ -85,14 +91,14 @@ def pegarCustoTotal(fichas: list):
             if ficha[0] == "Qtde":
                 continue
             else:
-                custoTotal += converterDinheiroParaFloat(ficha[-1])
-        return formatarDinheiro(custoTotal)
+                custoTotal += converter_dinheiro_para_float(ficha[-1])
+        return formatar_dinheiro(custoTotal)
     except Exception as e:
         print(f"Erro: {e}")
         return False
 
 
-def pegarDataRecibo(data_admissao: datetime.date):
+def pegar_data_Recibo(data_admissao: datetime.date):
     """Pegar a data do recibo com base no tipo do colaborador
     pode ser um colaborador antigo ou novo, pois se for novo a data no arquivo deve ser a data de admissão senão a data atual.
     Para descobrir vou usar a data de admissão para ser mais pratico se a data for maior que hoje então é um colaborador novo senão é um colaborador antigo, então irá ter a data de hoje.
@@ -112,16 +118,27 @@ def pegarDataRecibo(data_admissao: datetime.date):
         return False
 
 
-def gerarTermoUni(matricula: int, ids_fichas: List[int]):
+def status_colab_arquivo(matricula: int):
     try:
-        fichas = dadosFichaUni(ids_fichas)
+        lanctos = TsmyEuLancto.objects.filter(id_ficha__matricula__matricula=matricula)
+        if lanctos.filter(cgo=219).exists() and not lanctos.filter(cgo=221).exists():
+            return "integração"
+        return "troca"
+    except Exception as e:
+        logger.error(e)
+        return None
+
+
+def gerar_termo_uni(matricula: int, ids_fichas: List[int]):
+    try:
+        fichas = dados_ficha_uni(ids_fichas)
         if len(fichas) <= 1:
             raise Exception("Nenhuma ficha encontrada")
-        custoTotal = pegarCustoTotal(fichas)
+        custoTotal = pegar_custo_total(fichas)
         fichas.append(["", "", "Total", custoTotal])
         percentual = pegar_percentual_atual()
         colab = TsmyEuColaboradores.objects.get(matricula=matricula)
-        dataAtual = pegarDataRecibo(colab.dt_adm).strftime("%d/%m/%Y")  # type: ignore
+        dataAtual = pegar_data_Recibo(colab.dt_adm).strftime("%d/%m/%Y")  # type: ignore
         if len(str(colab.cpf)) == 10:
             colab.cpf = "0" + str(colab.cpf)  # type: ignore
         elif len(str(colab.cpf)) == 9:
@@ -145,9 +162,36 @@ def gerarTermoUni(matricula: int, ids_fichas: List[int]):
         raise Exception("Erro ao carregar dados da ficha recibo uniforme: ", e)
 
 
-def gerarTermoEpi(matricula: int, ids_fichas):
+def gerar_termo_epi(matricula: int, ids_fichas):
     try:
-        pass
+        fichas = dados_ficha_epi(ids_fichas)
+        if not fichas:
+            return None
+        colab = TsmyEuColaboradores.objects.get(matricula=matricula)
+        if len(str(colab.cpf)) == 10:
+            colab.cpf = "0" + str(colab.cpf)  # type: ignore
+        elif len(str(colab.cpf)) == 9:
+            colab.cpf = "00" + str(colab.cpf)  # type: ignore
+        data = {
+            "nome": colab.nome,
+            "nroempresa": str(colab.nroempresa),
+            "matricula": str(colab.matricula),
+            "cargo": (
+                colab.cod_funcao_nova.funcao
+                if colab.cod_funcao_nova
+                else colab.cod_funcao.funcao  # type: ignore
+            ),
+            "cpf": str(colab.cpf),
+            "setor": "",
+            "dataAtual": datetime.date.today().strftime("%d/%m/%Y"),
+        }
+        if status_colab_arquivo(matricula) == "integração":
+            arquivo_integracao = cria_integracao_epi(data)
+            print("Integração")
+        elif status_colab_arquivo(matricula) == "troca":
+            fichas = transformar_lista_para_troca_epi(fichas)
+            reciboEpi = criar_troca_epi(data, fichas)  # type: ignore
+        return reciboEpi
     except Exception as e:
         logger.error(f"Erro criar Recibo: {e}")
         raise Exception("Erro ao carregar dados da ficha recibo EPI: ", e)
