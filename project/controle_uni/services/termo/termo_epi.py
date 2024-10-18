@@ -43,6 +43,8 @@ Devolução""",
                         "",
                     ]
                 )
+        if len(data) == 1:
+            return None  # type: ignore
         return data
     except Exception as e:
         print(f"Erro: {e}")

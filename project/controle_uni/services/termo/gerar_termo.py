@@ -1,5 +1,6 @@
 import datetime
 import logging
+import os
 from typing import List
 from project.controle_uni.models import (
     TsmyEuArquivo,
@@ -12,8 +13,8 @@ from project.controle_uni.services.termo.termo_epi import (
     transformar_lista_para_troca_epi,
 )
 from project.controle_uni.services.termo.termo_uni import dados_ficha_uni
-from project.controle_uni.termo.fichaDeControleEpi import criarFichaDeControle
-from project.controle_uni.termo.integracao_epi import cria_integracao_epi
+from project.controle_uni.termo.ficha_controle import criar_ficha_controle
+from project.controle_uni.termo.integracao_epi import criar_integracao_epi
 from project.controle_uni.termo.reciboEntregaUni import criar_termo_uni
 from project.controle_uni.termo.troca_epi import criar_troca_epi
 from project.intranet.models import SmyUsuario
@@ -180,7 +181,8 @@ def gerar_termo_epi(matricula: int, ids_fichas, usuario: SmyUsuario):
     try:
         fichas = dados_ficha_epi(ids_fichas)
         if not fichas:
-            return None
+            logger.info("Nenhum EPI encontrado")
+            return None, None
         colab = TsmyEuColaboradores.objects.get(matricula=matricula)
         if len(str(colab.cpf)) == 10:
             colab.cpf = "0" + str(colab.cpf)  # type: ignore
@@ -199,18 +201,18 @@ def gerar_termo_epi(matricula: int, ids_fichas, usuario: SmyUsuario):
             "setor": "",
             "dataAtual": datetime.date.today().strftime("%d/%m/%Y"),
         }
-        if status_colab_arquivo(matricula) == "integração":
-            arquivo_integracao: str = cria_integracao_epi(data)  # type: ignore
-            criar_registro_arquivo_integracao(data, arquivo_integracao, usuario)
-            if not arquivo_integracao:
-                logger.error("Erro ao criar arquivo de integração")
-                return None
-            recibo_epi = criarFichaDeControle(data, fichas, arquivo_integracao)  # type: ignore
+        if status_colab_arquivo(matricula) == "troca":
+            arquivo_integracao: str = criar_integracao_epi(data)  # type: ignore
+            recibo_epi = criar_ficha_controle(data, fichas)  # type: ignore
             print("Integração")
-        elif status_colab_arquivo(matricula) == "troca":
+        elif status_colab_arquivo(matricula) == "integracao":
             fichas = transformar_lista_para_troca_epi(fichas)
             recibo_epi = criar_troca_epi(data, fichas)  # type: ignore
-        return recibo_epi
+        return recibo_epi, arquivo_integracao
     except Exception as e:
+        if "arquivo_integracao" in locals():
+            os.remove(arquivo_integracao)
+        if "recibo_epi" in locals():
+            os.remove(recibo_epi)  # type: ignore
         logger.error(f"Erro criar Recibo: {e}")
         raise Exception("Erro ao carregar dados da ficha recibo EPI: ", e)
