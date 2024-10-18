@@ -1,21 +1,25 @@
 import datetime
 import logging
-import os
 from typing import List
 
 from django.db import connection
-from ninja import File, Router, Schema, UploadedFile
+from ninja import Router
 
-from project.c5.models import MapProduto
-from project.controle_uni.services.cargo import carregar_arquivo_cargo
 from project.controle_uni.models import (
     TsmyEuCa,
     TsmyEuCargoEpiUnif,
     TsmyEuColaboradores,
     TsmyEuFichaColab,
 )
-from project.controle_uni.schemas import SchemaFichaOut, SchemaVerificarQuantidade
-from project.controle_uni.services.dados_epi import verificarNroCa
+from project.controle_uni.schemas import (
+    SchemaFichaOut,
+    SchemaFichaUnitOut,
+    SchemaVerificarQuantidade,
+)
+from project.controle_uni.services.dados_epi import (
+    verificar_produto_epi,
+    verificarNroCa,
+)
 import project.schemas as SchemaBase
 
 logger = logging.getLogger("ficha")
@@ -46,7 +50,26 @@ def buscar_fichas(request, matricula: int, tipo_ficha: str):
         if tipo_ficha == "OR":
             tipos = ["OR"]
         return TsmyEuFichaColab.objects.filter(
-            matricula__matricula=matricula, sit_produto__in=tipos
+            matricula__matricula=matricula, sit_produto__in=tipos, sit_ficha="A"
+        )
+    except Exception as e:
+        logger.error(f"Erro ao buscar fichas de cadastro: {e}")
+        return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}
+
+
+@router.get(
+    "/desativadas/",
+    response={
+        200: List[SchemaFichaOut],
+        404: SchemaBase.RespostaErro,
+        500: SchemaBase.RespostaErro,
+    },
+    summary="Retorna todas as fichas de cadastro",
+)
+def buscar_fichas_desativadas(request, matricula: int):
+    try:
+        return TsmyEuFichaColab.objects.filter(
+            matricula__matricula=matricula, sit_ficha="D"
         )
     except Exception as e:
         logger.error(f"Erro ao buscar fichas de cadastro: {e}")
@@ -55,7 +78,7 @@ def buscar_fichas(request, matricula: int, tipo_ficha: str):
 
 @router.get(
     "/{id_ficha}",
-    response={200: SchemaFichaOut, 404: SchemaBase.RespostaErro},
+    response={200: SchemaFichaUnitOut, 404: SchemaBase.RespostaErro},
     summary="Retorna uma ficha de cadastro específica",
 )
 def buscar_ficha(request, id_ficha: int):
@@ -148,15 +171,9 @@ def validar_ca(request, nro_ca: int):
     },
     tags=["Produtos"],
 )
-def verificar_produto_epi(request, seq_produto: int):
+def verificar_produto_epi_request(request, seq_produto: int):
     try:
-        with connection.cursor() as cursor:
-            result = cursor.execute(
-                f"select smy_fbusca_categ_nivel({seq_produto},2) from dual"
-            )
-            result = result.fetchall()  # type: ignore
-            if "EPI" in result[0][0]:
-                return {"descricao": "True"}
-        return {"descricao": "False"}
+        epi = verificar_produto_epi(seq_produto)
+        return {"descricao": f"{epi}"}
     except Exception as e:
         return 500, {"erro": {"descricao": "Erro interno", "detalhes": str(e)}}

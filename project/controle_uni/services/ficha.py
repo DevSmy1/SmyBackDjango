@@ -11,10 +11,12 @@ from project.controle_uni.models import (
     TsmyEuCargoEpiUnif,
     TsmyEuColaboradores,
     TsmyEuFichaColab,
+    TsmyEuLancto,
     TsmyEuObservacaoFicha,
     TsmyEuParametro,
 )
 from project.controle_uni.schemas import SchemaAlterarFicha, SchemaFichaIn
+from project.controle_uni.services.lancto import criar_lancto
 from project.intranet.models import SmyUsuario
 
 
@@ -114,6 +116,8 @@ def criar_ficha(dados: SchemaFichaIn, usuario: SmyUsuario) -> List[int]:
                 quantidade=1,
                 nro_ca=dados.nro_ca or None,
                 id_observacao_id=dados.id_observacao or None,
+                dt_validade=dados.dt_validade or None,
+                nroempresa=dados.nro_empresa_orig or None,
                 custoAtual=preco,
                 dataCusto=dataCusto,
                 percentual=percentual,
@@ -123,6 +127,9 @@ def criar_ficha(dados: SchemaFichaIn, usuario: SmyUsuario) -> List[int]:
             ficha.full_clean()
             ficha.save()
             fichas_criadas.append(ficha.id_ficha)
+        if criar_lancto(dados, fichas_criadas, usuario) is None:
+            TsmyEuFichaColab.objects.filter(id_ficha__in=fichas_criadas).delete()
+            raise ValueError("Erro ao criar lançamento")
         return fichas_criadas
     except ValidationError as e:
         TsmyEuFichaColab.objects.filter(id_ficha__in=fichas_criadas).delete()
@@ -143,7 +150,8 @@ def alterar_ficha(dados: SchemaAlterarFicha, usuario: SmyUsuario):
             colab = TsmyEuColaboradores.objects.get(matricula=value)
             setattr(ficha, key, colab)
             continue
-        if key == "id_observacao":
+        if key == "id_observacao" and value:
+            print(value)
             observacao = TsmyEuObservacaoFicha.objects.get(pk=value)
             setattr(ficha, key, observacao)
             continue
@@ -158,6 +166,7 @@ def desativar_ficha(id_ficha: int, usuario: SmyUsuario):
     ficha = TsmyEuFichaColab.objects.get(id_ficha=id_ficha)
     ficha.sit_ficha = "D"
     ficha.usuario_alteracao = usuario
+    TsmyEuLancto.objects.filter(id_ficha=id_ficha, dt_arquivo=None)
     ficha.full_clean()
     ficha.save()
     return ficha

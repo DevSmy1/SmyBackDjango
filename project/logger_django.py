@@ -42,6 +42,12 @@ LOGGING = {
             ],
             "level": "WARNING",
         },
+        "termo": {
+            "handlers": [
+                "termoLog",
+            ],
+            "level": "WARNING",
+        },
     },
     "handlers": {
         "cargoLog": {
@@ -78,6 +84,12 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.FileHandler",
             "filename": os.path.join(BASE_DIR, "logs/sgg.log"),
+            "formatter": "simpleRe",
+        },
+        "termoLog": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/termo.log"),
             "formatter": "simpleRe",
         },
     },

@@ -531,7 +531,7 @@ class TsmyEuParametro(BaseModel):
 
 
 class TsmyEuArquivo(BaseModel):
-    id_aquivo = models.AutoField(primary_key=True)
+    id_arquivo = models.AutoField(primary_key=True)
     nome_arquivo = models.CharField(max_length=100)
     arquivo_assinado = models.CharField(max_length=100, blank=True, null=True)
     id_ficha = models.ForeignKey(

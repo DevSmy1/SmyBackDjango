@@ -98,7 +98,9 @@ def carregar_arquivo_colaborador(request, arquivoColab: UploadedFile = File(...)
 )
 def criar_colab(request, colab: SchemaColabIn):
     try:
-        TsmyEuColaboradores.objects.create(**colab.dict())
+        TsmyEuColaboradores.objects.create(
+            **colab.dict(), usuario_criacao=request.auth, usuario_alteracao=request.auth
+        )
         return {"descricao": "Colaborador criado com sucesso"}
     except Exception as e:
         logger.error(f"Erro ao criar colaborador: {e}")
@@ -115,6 +117,8 @@ def alterar_colab(request, id_colab: int, data: SchemaColabIn):
         colab = TsmyEuColaboradores.objects.get(id_colab=id_colab)
         for key, value in data.dict(exclude_unset=True).items():
             setattr(colab, key, value)
+        if colab.usuario_criacao is None:
+            colab.usuario_criacao = request.auth
         colab.usuario_alteracao = request.auth
         colab.full_clean()
         colab.save()

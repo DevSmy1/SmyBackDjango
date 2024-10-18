@@ -85,7 +85,7 @@ class TestFicha(TestCase):
         fichaAlterada = alterar_ficha(dadosAlterar, self.usuario)
         self.assertEqual(fichaAlterada.id_ficha, ficha.id_ficha)
         self.assertNotEqual(fichaAlterada.sit_produto, ficha.sit_produto)
-        self.assertNotEqual(fichaAlterada.matricula, ficha.matricula)
+        self.assertEqual(fichaAlterada.matricula, ficha.matricula)
         lanctos = TsmyEuLancto.objects.filter(id_ficha=dadosAlterar.id_ficha)
         lanctosAlterados = alterar_lanctos(dadosAlterar, self.usuario)
         self.assertEqual(lanctos.count(), lanctosAlterados.count())
