@@ -4,14 +4,16 @@ from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph, Table, TableStyle
-from project.controle_uni.termo.functionsPdf import mm2pt, pt2mm
+from project.controle_uni.termo.functionsPdf import mm2pt
 import logging
 
 logger = logging.getLogger("termo")
 
 
-def criaNomeArquivoEpi(matricula):
+def criar_nome_arquivo_epi(matricula):
     try:
+        if not os.path.exists("./ReciboEpi"):
+            os.makedirs("./ReciboEpi")
         # verifica se já existe um arquivo com esse nome
         if os.path.exists(f"./ReciboEpi/{matricula}FichaControle.pdf"):
             # se existir, criar um novo nome
@@ -26,10 +28,10 @@ def criaNomeArquivoEpi(matricula):
         return False
 
 
-def criarFichaDeControle(dadosColab: dict, dados: list):
+def criar_ficha_controle(dadosColab: dict, dados: list):
     try:
-        filePath = criaNomeArquivoEpi(dadosColab["matricula"])
-        pdf = canvas.Canvas(filePath, pagesize=landscape(A4))
+        filePath = criar_nome_arquivo_epi(dadosColab["matricula"])
+        pdf = canvas.Canvas(filePath, pagesize=landscape(A4))  # type: ignore
         # Criando estilo
         styles = getSampleStyleSheet()
         # Mudando fonte
@@ -57,13 +59,18 @@ def criarFichaDeControle(dadosColab: dict, dados: list):
         styles["Normal"].alignment = 1
         pdf.rect(mm2pt(60), mm2pt(180), mm2pt(230), mm2pt(22))
         # Titulo
-        addTitulo(pdf, styles)
+        add_titulo(pdf, styles)
         styles["Normal"].alignment = 0
 
         # Logo da empresa
         pdf.rect(mm2pt(240), mm2pt(180), mm2pt(50), mm2pt(22))
         pdf.drawImage(
-            "st.png", mm2pt(255), mm2pt(182), mm2pt(20), mm2pt(18), mask="auto"
+            "./project/controle_uni/termo/st.png",
+            mm2pt(255),
+            mm2pt(182),
+            mm2pt(20),
+            mm2pt(18),
+            mask="auto",
         )
 
         # Escopo do Documento
@@ -73,24 +80,24 @@ def criarFichaDeControle(dadosColab: dict, dados: list):
         styles["Normal"].fontName = "Helvetica-Bold"
 
         # Nome
-        addDadosColab(dadosColab, pdf, styles, stylesDados)
+        add_dados_colab(dadosColab, pdf, styles, stylesDados)
 
         # Termo de Responsabilidade
-        addTermo(pdf, styles)
+        add_termo(pdf, styles)
 
         # Data e Assinatura
-        addDataAssinatura(pdf, styles)
+        add_data_assinatura(pdf, styles)
 
         if len(dados) > 11:
             dados1 = dados[:11]
-            addTabela(dados1, pdf, 70)
+            add_tabela(dados1, pdf, 70)
         elif len(dados) < 11:
             while len(dados) < 11:
                 dados.append([])
-            addTabela(dados, pdf, 70)
+            add_tabela(dados, pdf, 70)
 
         # Legenda
-        addLegenda(pdf, styles)
+        add_legenda(pdf, styles)
 
         # # Criar Segunda Página
         # pdf.showPage()
@@ -109,10 +116,11 @@ def criarFichaDeControle(dadosColab: dict, dados: list):
         pdf.save()
         return filePath
     except Exception as erro:
-        print(f"Erro: {erro}")
+        logger.error(f"Erro ao criar ficha de controle: {erro}")
+        raise Exception("Erro ao criar ficha de controle")
 
 
-def addTabela(dados, pdf, alturaInicial):
+def add_tabela(dados, pdf, alturaInicial):
     tabela = Table(
         dados,
         colWidths=[
@@ -143,7 +151,7 @@ def addTabela(dados, pdf, alturaInicial):
     tabela.drawOn(pdf, mm2pt(10), mm2pt(alturaInicial - (len(dados) * 5)))
 
 
-def addLegenda(pdf, styles):
+def add_legenda(pdf, styles):
     styles["Normal"].fontSize = 12
     styles["Normal"].fontName = "Helvetica-Bold"
     legenda = Paragraph(
@@ -156,7 +164,7 @@ def addLegenda(pdf, styles):
     return legenda
 
 
-def addDataAssinatura(pdf, styles):
+def add_data_assinatura(pdf, styles):
     styles["Normal"].fontSize = 13
     styles["Normal"].fontName = "Helvetica-Bold"
     dataAss = Paragraph(
@@ -176,7 +184,7 @@ def addDataAssinatura(pdf, styles):
     assinatura.drawOn(pdf, mm2pt(120), mm2pt(100))
 
 
-def addTermo(pdf, styles):
+def add_termo(pdf, styles):
     tituloTermo = Paragraph(
         """Termo de Responsabilidade""",
         style=styles["Normal"],
@@ -197,7 +205,7 @@ def addTermo(pdf, styles):
     textoResponsabilidade.drawOn(pdf, mm2pt(15), mm2pt(110))
 
 
-def addTitulo(pdf, styles):
+def add_titulo(pdf, styles):
     titulo = Paragraph(
         ("""Ficha de Controle e Entrega de Equipamento""").upper(),
         style=styles["Normal"],
@@ -215,7 +223,7 @@ def addTitulo(pdf, styles):
     titulo.drawOn(pdf, mm2pt(62), mm2pt(190))
 
 
-def addDadosColab(dadosColab, pdf, styles, stylesDados):
+def add_dados_colab(dadosColab, pdf, styles, stylesDados):
     pdf.rect(mm2pt(10), mm2pt(170), mm2pt(120), mm2pt(10))
     nome = Paragraph(
         """Nome:""",
@@ -332,91 +340,3 @@ def addDadosColab(dadosColab, pdf, styles, stylesDados):
     )
     dtDem.wrapOn(pdf, mm2pt(94), mm2pt(10))
     dtDem.drawOn(pdf, mm2pt(213), mm2pt(162))
-
-
-dadosColab = {
-    "nome": "Fulano de Tal Beltrano da Silva",
-    "nroempresa": "1",
-    "matricula": "999999",
-    "cargo": "Auxiliar de Açougue",
-    "cpf": "12145487896",
-    "setor": "Açougue",
-    "dataAtual": "12/12/2023",
-}
-
-dados = [
-    [
-        """Data 
-Entrega""",
-        "Qdt",
-        "Descrição do E.P.I",
-        "Assinatura",
-        "CA",
-        """Data 
-Devolução""",
-        "Motivo",
-        "Assinatura",
-    ],
-    [
-        "",
-        "1",
-        "Capacete",
-        "",
-        "123456",
-        "",
-        "E",
-        "",
-    ],
-    [
-        "",
-        "1",
-        "Capacete",
-        "",
-        "123456",
-        "",
-        "E",
-        "",
-    ],
-    [
-        "",
-        "1",
-        "Óculos de Proteção",
-        "",
-        "789012",
-        "",
-        "E",
-        "",
-    ],
-    [
-        "",
-        "1",
-        "Luvas",
-        "",
-        "345678",
-        "",
-        "E",
-        "",
-    ],
-    [
-        "",
-        "1",
-        "Protetor Auricular",
-        "",
-        "567890",
-        "",
-        "E",
-        "",
-    ],
-    [
-        "",
-        "1",
-        "Máscara Respiratória",
-        "",
-        "901234",
-        "",
-        "E",
-        "",
-    ],
-]
-
-# criarFichaDeControle(dadosColab, dados)

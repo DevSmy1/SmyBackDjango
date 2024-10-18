@@ -23,11 +23,11 @@ def criar_nome_arquivo_epi(matricula):
         else:
             return f"./ReciboEpi/{matricula}Integracao.pdf"
     except Exception as e:
-        print(f"Erro: {e}")
-        return False
+        logger.error(f"Erro ao criar nome do arquivo: {e}")
+        raise Exception("Erro ao criar nome do arquivo")
 
 
-def cria_integracao_epi(dadosColab: dict):
+def criar_integracao_epi(dadosColab: dict):
     try:
         filePath = criar_nome_arquivo_epi(dadosColab["matricula"])
         pdf = canvas.Canvas(filePath, pagesize=landscape(A4))  # type: ignore
@@ -57,7 +57,7 @@ def cria_integracao_epi(dadosColab: dict):
         return filePath
     except Exception as erro:
         logger.error(f"Erro ao criar termo de integração: {erro}")
-        return None
+        raise Exception("Erro ao criar termo de integração")
 
 
 def add_linhas_dados_colab(pdf):
@@ -113,7 +113,12 @@ def add_header(pdf):
     pdf.drawString(mm2pt(215), mm2pt(180), "Pagina: 1/1")
 
     pdf.drawImage(
-        "st.png", mm2pt(250), mm2pt(175), width=mm2pt(32), height=mm2pt(30), mask="auto"
+        "./project/controle_uni/termo/st.png",
+        mm2pt(250),
+        mm2pt(175),
+        width=mm2pt(32),
+        height=mm2pt(30),
+        mask="auto",
     )
 
 
