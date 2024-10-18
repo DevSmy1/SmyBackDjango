@@ -11,6 +11,7 @@ from project.controle_uni.models import (
     TsmyEuCargoEpiUnif,
     TsmyEuColaboradores,
     TsmyEuFichaColab,
+    TsmyEuLancto,
     TsmyEuObservacaoFicha,
     TsmyEuParametro,
 )
@@ -165,6 +166,7 @@ def desativar_ficha(id_ficha: int, usuario: SmyUsuario):
     ficha = TsmyEuFichaColab.objects.get(id_ficha=id_ficha)
     ficha.sit_ficha = "D"
     ficha.usuario_alteracao = usuario
+    TsmyEuLancto.objects.filter(id_ficha=id_ficha, dt_arquivo=None)
     ficha.full_clean()
     ficha.save()
     return ficha
