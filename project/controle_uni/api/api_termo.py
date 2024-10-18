@@ -42,6 +42,7 @@ def criar_recibo(
             matricula,
             recibo_uni,  # type: ignore
             recibo_epi,  # type: ignore
+            arquivo_integracao,  # type: ignore
             request.auth,
         )
         return 200, {
